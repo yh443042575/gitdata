@@ -26,11 +26,7 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-    	<groupId>edu.hit.yh</groupId>
-  		<artifactId>git-persistence</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-    </dependency>
+    
   </dependencies>
   
   <repositories> 
