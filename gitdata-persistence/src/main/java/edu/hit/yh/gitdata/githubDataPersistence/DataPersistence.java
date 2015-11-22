@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import edu.hit.yh.gitdata.githubDataAnalyzer.HtmlAnalyzer;
+import edu.hit.yh.gitdata.githubDataAnalyzer.TargetFinder;
 import edu.hit.yh.gitdata.githubDataModel.CommitCommentEvent;
 import edu.hit.yh.gitdata.githubDataModel.CreateEvent;
 import edu.hit.yh.gitdata.githubDataModel.DeleteEvent;
@@ -36,6 +37,8 @@ import edu.hit.yh.gitdata.githubDataModel.WatchEvent;
  */
 public class DataPersistence {
 
+	
+	
 	public Object constructCommitCommentEvent(JsonObject root) {
 		HtmlAnalyzer htmlAnalyzer = null;
 		String htmlResult = "";
@@ -61,12 +64,14 @@ public class DataPersistence {
 				commitCommentEvent.setCommitId(payload.get("commit_id")
 						.getAsString());
 		}
+		
+		
 		if (root.has("repo")) {
 			commitCommentEvent.setRepo(root.get("repo").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		} else {
 			commitCommentEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -118,11 +123,11 @@ public class DataPersistence {
 		CreateEvent createEvent = new CreateEvent();
 		JsonObject payload = root.get("payload").getAsJsonObject();
 		if (root.has("repo")) {
-			createEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			createEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			createEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -149,11 +154,11 @@ public class DataPersistence {
 		DeleteEvent deleteEvent = new DeleteEvent();
 		JsonObject payload = root.get("payload").getAsJsonObject();
 		if (root.has("repo")) {
-			deleteEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			deleteEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			deleteEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -171,11 +176,11 @@ public class DataPersistence {
 		JsonObject payload = root.get("payload").getAsJsonObject();
 
 		if (root.has("repo")) {
-			forkEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			forkEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			forkEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -239,10 +244,10 @@ public class DataPersistence {
 
 		if (root.has("repo")) {
 			issueCommentEvent.setRepo(root.get("repo").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		} else {
 			issueCommentEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -287,11 +292,11 @@ public class DataPersistence {
 		IssuesEvent issuesEvent = new IssuesEvent();
 		System.out.println("2013issuesEvent示例："+root.toString());
 		if (root.has("repo")) {
-			issuesEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			issuesEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			issuesEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -345,11 +350,11 @@ public class DataPersistence {
 	public Object constructMemberEvent(JsonObject root) {
 		MemberEvent memberEvent = new MemberEvent();
 		if (root.has("repo")) {
-			memberEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			memberEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			memberEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -371,10 +376,10 @@ public class DataPersistence {
 		PullRequestEvent pullrequestEvent = new PullRequestEvent();
 		if (root.has("repo")) {
 			pullrequestEvent.setRepo(root.get("repo").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		} else {
 			pullrequestEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -432,10 +437,10 @@ public class DataPersistence {
 
 		if (root.has("repo")) {
 			pullRequestReviewCommentEvent.setRepo(root.get("repo")
-					.getAsJsonObject().get("name").getAsString());
+					.getAsJsonObject().get("url").getAsString());
 		} else {
 			pullRequestReviewCommentEvent.setRepo(root.get("repository")
-					.getAsJsonObject().get("name").getAsString());
+					.getAsJsonObject().get("url").getAsString());
 		}
 
 		if (root.get("actor").isJsonObject()) {
@@ -485,11 +490,11 @@ public class DataPersistence {
 		JsonObject payload = root.get("payload").getAsJsonObject();
 		JsonObject lastCommit = null;
 		if (root.has("repo")) {
-			pushEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			pushEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			pushEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		if (root.get("actor").isJsonObject()) {
 			JsonObject actor = root.get("actor").getAsJsonObject();
@@ -515,6 +520,9 @@ public class DataPersistence {
 		if (pushEvent.getCommitMessage().equals("")) {
 			// System.out.println(root.toString());
 		}
+		String url = pushEvent.getRepo()+"/commit/"+pushEvent.getCommitSha();
+		String target = TargetFinder.findTargetAmongArtifactsByUrl(url);
+		
 		return pushEvent;
 	}
 
@@ -527,11 +535,11 @@ public class DataPersistence {
 			watchEvent.setActor(root.get("actor").getAsString());
 		}
 		if (root.has("repo")) {
-			watchEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			watchEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else {
 			watchEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		JsonObject payload = root.get("payload").getAsJsonObject();
 		watchEvent.setAction(payload.get("action").getAsString());
@@ -551,29 +559,16 @@ public class DataPersistence {
 			followEvent.setActor(root.get("actor").getAsString());
 		}
 		if (root.has("repo")) {
-			followEvent.setRepo(root.get("repo").getAsJsonObject().get("name")
+			followEvent.setRepo(root.get("repo").getAsJsonObject().get("url")
 					.getAsString());
 		} else if (root.has("repository")) {
 			followEvent.setRepo(root.get("repository").getAsJsonObject()
-					.get("name").getAsString());
+					.get("url").getAsString());
 		}
 		followEvent.setTarget(target.get("login").getAsString());
 
 		return followEvent;
 	}
 	
-	/*
-	 * 通过开发者每一次行为的谈话内容，识别出该行为是针对谁的
-	 */
-	private String findTargetByContent(String content){
-		
-		StringBuffer target = new StringBuffer("");
-		Pattern pattern = Pattern.compile("@[a-zA-Z]+");
-		Matcher matcher = pattern.matcher(content);
-		while(matcher.find()){
-			target.append(matcher.group()+"+");
-		}
-		return target.toString();
-	}
 	
 }

@@ -79,7 +79,8 @@ public class HtmlAnalyzer {
 
 		HttpsURLConnection httpURLConnection = (HttpsURLConnection) getUrl
 				.openConnection();
-
+		httpURLConnection.setConnectTimeout(60000);
+		
 		httpURLConnection.connect();
 		if(httpURLConnection.getResponseCode()!=404){//检测response状态码
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -88,6 +89,8 @@ public class HtmlAnalyzer {
 			while ((temp = reader.readLine()) != null) {
 				result.append(temp);
 			}
+		}else {
+			return null;
 		}
 		
 		return result.toString();
@@ -187,14 +190,19 @@ public class HtmlAnalyzer {
 			if(htmlPage.equals("")){
 				
 			htmlPage = getResource(url);
+			
+				if(htmlPage!=null){
+					Parser htmlParser = new Parser(htmlPage);
 				
-			Parser htmlParser = new Parser(getResource(url));
-
-			HtmlPage visitor = new HtmlPage(htmlParser);
-
-			htmlParser.visitAllNodesWith(visitor);
-
-			htmlNodeList = visitor.getBody();
+					HtmlPage visitor = new HtmlPage(htmlParser);
+				
+					htmlParser.visitAllNodesWith(visitor);
+				
+					htmlNodeList = visitor.getBody();
+				
+				}else {
+					return null;
+				}
 			
 			}else {
 				result = "404 not found Exception";
