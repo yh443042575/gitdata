@@ -15,6 +15,8 @@ public class IssuesEvent {
 	private String issueLabels;
 	private String issueAssingee;
 	private String issueCreatedAt;
+	
+	private String issueUrl;
 	private String createdAt;
 	private String artifactId;
 	
@@ -85,6 +87,12 @@ public class IssuesEvent {
 	}
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
+	}
+	public String getIssueUrl() {
+		return issueUrl;
+	}
+	public void setIssueUrl(String issueUrl) {
+		this.issueUrl = issueUrl;
 	}
 	
 	

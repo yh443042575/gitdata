@@ -20,16 +20,16 @@ public class EventAnalyzer {
 	}
 	
 	//分析json字符串，将对应的json解析成object，并利用反射调用DataPersistence类，将Event事件持久化
-	public void analyzeJson(String eventJson,Session session){	
+	public void analyzeJson(String eventJson,Session session,String repo){	
 		
 		try {
 			jsonObject = (JsonObject)jsonParser.parse(eventJson);
 			String type = jsonObject.get("type").getAsString();
 			if(!type.equals("GistEvent")&&!type.equals("GollumEvent")&&!type.equals("PublicEvent")&&!type.equals("DownloadEvent")){
 			Class<?> event = Class.forName("edu.hit.yh.gitdata.githubDataPersistence.DataPersistence");
-			Method method = event.getMethod("construct"+type, JsonObject.class);
+			Method method = event.getMethod("construct"+type, JsonObject.class, String.class);
 			//System.out.println("construct"+type);
-			session.save(method.invoke(event.newInstance(), jsonObject));
+			session.save(method.invoke(event.newInstance(), jsonObject, repo));
 			}
 
 		} catch (ClassNotFoundException e) {

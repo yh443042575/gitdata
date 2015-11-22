@@ -107,7 +107,7 @@ public class DataCutter {
 		int downFlag;
 		int scannedFlag = 0;// 保存扫描过的位置的尾部，每一次找到新的json之后都更新一次
 
-		Pattern pattern = Pattern.compile(program);// "https://github\\.com/"+
+		Pattern pattern = Pattern.compile(program+"\"|"+program+"/");// "https://github\\.com/"+
 
 		while (!fileScannedFinishFlag) {
 			String partition = new String(this.cut());

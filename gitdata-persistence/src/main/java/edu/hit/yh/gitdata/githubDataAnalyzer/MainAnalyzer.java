@@ -15,7 +15,6 @@ import org.hibernate.Session;
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.githubDataPersistence.DataCutter;
 
-
 /**
  * 解压文件，找到我们想要的相关项目的数据， 并调用持久化函数将相对应的event持久化到数据库中
  * 
@@ -25,25 +24,25 @@ import edu.hit.yh.gitdata.githubDataPersistence.DataCutter;
 public class MainAnalyzer {
 
 	public void startAnalyze() throws InterruptedException {
-		CountDownLatch countDownLatch= new CountDownLatch(2);
+		CountDownLatch countDownLatch = new CountDownLatch(2);
 		ExecutorService exec = Executors.newFixedThreadPool(2);
-		Session session1 = HibernateUtil.getSessionFactory()
-				.openSession();
-		Session session2 = HibernateUtil.getSessionFactory()
-				.openSession();
+		Session session1 = HibernateUtil.getSessionFactory().openSession();
+		Session session2 = HibernateUtil.getSessionFactory().openSession();
 		UnzipAndDispatcher unzipAndDispatcher1 = new UnzipAndDispatcher(
-				"G://githubRawData", "2012-01-01-0", "2012-03-01-0",countDownLatch,session1);
+				"D://githubRawData", "2013-08-01-0", "2013-09-01-0",
+				countDownLatch, session1);
 		UnzipAndDispatcher unzipAndDispatcher2 = new UnzipAndDispatcher(
-				"G://githubRawData", "2012-03-06-0", "2012-05-17-0",countDownLatch,session2);
+				"D://githubRawData", "2014-04-15-0", "2014-05-17-0",
+				countDownLatch, session2);
 		long time = System.currentTimeMillis();
 		exec.execute(unzipAndDispatcher1);
-		exec.execute(unzipAndDispatcher2);		
+		exec.execute(unzipAndDispatcher2);
 		countDownLatch.await();
 		HibernateUtil.closeSessionFactory();
 		exec.shutdown();
-		System.out.println("存储用时： "+(System.currentTimeMillis()-time));
+		System.out.println("存储用时： " + (System.currentTimeMillis() - time));
 		// unzipAndDispatcher.run();
-		
+
 	}
 
 }
@@ -61,12 +60,13 @@ class UnzipAndDispatcher implements Runnable {
 	private String startDate;
 	/* 扫描结束日期 */
 	private String stopDate;
-	
+
 	private CountDownLatch countDownLatch;
 
 	private Session session;
-	
-	public UnzipAndDispatcher(String filePath, String startDate, String stopDate,CountDownLatch countDownLatch,Session session) {
+
+	public UnzipAndDispatcher(String filePath, String startDate,
+			String stopDate, CountDownLatch countDownLatch, Session session) {
 		this.startDate = startDate;
 		this.stopDate = stopDate;
 		this.filePath = filePath;
@@ -76,7 +76,7 @@ class UnzipAndDispatcher implements Runnable {
 
 	private EventAnalyzer eventAnalyzer = new EventAnalyzer();
 
-	/*某一个压缩包的文件还未分析完则为true，分析完了则设置为false*/
+	/* 某一个压缩包的文件还未分析完则为true，分析完了则设置为false */
 	private boolean flag = true;
 
 	public void run() {
@@ -100,7 +100,7 @@ class UnzipAndDispatcher implements Runnable {
 			e.printStackTrace();
 		}
 		/* 根据文件路径 */
-		
+
 		while (flag) {
 			String file = sdf.format(calendar.getTime());
 			if (file.charAt(file.length() - 2) == '0') {
@@ -111,29 +111,35 @@ class UnzipAndDispatcher implements Runnable {
 			/* 解压文件 */
 			UnzipTool.doUncompressFile(file + ".json.gz");
 			/* 对解压后的文件进行映射 */
-			File file2 = new File(file+".json");
-			DataCutter dataCutter = new DataCutter(file2);
-			/* 切割原始数据，获得跟项目有关的json */
-			List<String> jsonData;
-			try {
-				
-				jsonData = dataCutter.extractJsonData("\"name\":\"jquery/jquery\"|\"name\":\"jquery\"");
+			File file2 = new File(file + ".json");
+			if (file2.exists()) {
+				System.out.println("开始解析"+file2.getName());
+				DataCutter dataCutter = new DataCutter(file2);
+				/* 切割原始数据，获得跟项目有关的json */
+				List<String> jsonData;
+				try {
 
-				/* 循环解析json，将json数据进行持久化 */
-				synchronized (session) {
-					session.beginTransaction();
-					for (String json : jsonData) {
-						eventAnalyzer.analyzeJson(json,session);
-						try {
-							Thread.sleep(200);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+					String repo = "jquery/jquery";
+
+					jsonData = dataCutter.extractJsonData(repo);
+
+					/* 循环解析json，将json数据进行持久化 */
+					synchronized (session) {
+						session.beginTransaction();
+						for (String json : jsonData) {
+							eventAnalyzer.analyzeJson(json, session, repo);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
+						session.getTransaction().commit();
 					}
-					session.getTransaction().commit();
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
+				System.out.println("解析成功");
 			}
 			if (calendar.getTimeInMillis() < stopDateMillis) {
 				/* 如果没到指定日期，则继续分析下一个小时的数据 */
@@ -141,22 +147,19 @@ class UnzipAndDispatcher implements Runnable {
 			} else {
 				flag = false;
 			}
-			System.out.println(file+"解析完成");
-			if(file2.exists()){
-				System.out.println("文件存在，准备删除");
+			if (file2.exists()) {
 				try {
 					java.nio.file.Files.delete(file2.toPath());
-					System.out.println("删除成功");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}else {
+			} else {
 				System.out.println("很奇怪，文件不存在");
 			}
 		}
 		this.setFlag(false);
-		System.out.println(" end of the "+Thread.currentThread().getName());
+		System.out.println(" end of the " + Thread.currentThread().getName());
 		countDownLatch.countDown();
 	}
 

@@ -33,8 +33,8 @@ public class RegxTest {
 		Matcher matcher = pattern.matcher(content);*/
 		
 		
-		Pattern pattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/pull/[a-z[0-9]]+");
-		String content = "https://github.com/jquery/jquery/pull/1106.diff";
+		Pattern pattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/pull/[a-z[0-9]]+|[a-zA-Z]+/[a-zA-Z]+/issues/[a-z[0-9]]+");
+		String content = "https://github.com/jquery/jquery/issues/1106.diff";
 		Matcher matcher = pattern.matcher(content);
 		
 		

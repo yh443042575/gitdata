@@ -34,11 +34,13 @@ public class UnzipTool {
             System.out.println("Opening the compressed file.");   
             GZIPInputStream in = null;   
             try {   
-                in = new GZIPInputStream(new FileInputStream(inFileName));   
+            	in = new GZIPInputStream(new FileInputStream(inFileName));   
             } catch(FileNotFoundException e) {   
                 System.err.println("File not found. " + inFileName);   
-                System.exit(1);   
-            }   
+                return;
+            } catch (java.util.zip.ZipException e) {
+            	 return;
+			}  
   
             System.out.println("Open the output file.");   
             String outFileName = getFileName(inFileName);   
