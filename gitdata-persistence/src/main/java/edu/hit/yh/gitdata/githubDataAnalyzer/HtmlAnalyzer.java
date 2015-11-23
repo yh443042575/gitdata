@@ -81,23 +81,23 @@ public class HtmlAnalyzer {
 
 		try {
 			httpURLConnection.connect();
+			if (httpURLConnection.getResponseCode() != 404) {// 检测response状态码
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+						httpURLConnection.getInputStream()));
+				
+				while ((temp = reader.readLine()) != null) {
+					result.append(temp);
+				}
+				reader.close();
+			} else {
+				return null;
+			}
 		} catch (java.net.ConnectException e) {
 			System.err.println("------------超时的URL-----------------：" + url);
 		}catch (java.net.SocketException e) {
 			System.err.println("------------读取失败-----------------：" + url);
 		}
 
-		if (httpURLConnection.getResponseCode() != 404) {// 检测response状态码
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					httpURLConnection.getInputStream()));
-
-			while ((temp = reader.readLine()) != null) {
-				result.append(temp);
-			}
-			reader.close();
-		} else {
-			return null;
-		}
 		
 		return result.toString();
 	}

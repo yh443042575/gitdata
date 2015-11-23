@@ -13,15 +13,18 @@ public class IssuesDAOImpl implements IssuesDAO {
 
 	
 	
+	@SuppressWarnings("unused")
 	public List<SimpleBehavior> getIssuesEvents(String repo) {
 		// TODO 取出所给repo中的所有IssuesEvent
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.createSQLQuery("");
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		@SuppressWarnings("unchecked")
+		List<Object[]> list = session.createSQLQuery("select * from issuecommentevent where repo='"+repo+"'").list();
+		
 		return null;
 	}
 
 	public List<SimpleBehavior> getIssueCommentEvent(String repo) {
-		// TODO 取出所给repo中的所有IssuesEvent
+		// TODO 取出所给repo中的所有IssueCommentEvent
 		return null;
 	}
 
