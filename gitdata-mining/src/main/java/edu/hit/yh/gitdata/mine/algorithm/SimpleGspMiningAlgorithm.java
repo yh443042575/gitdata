@@ -3,6 +3,7 @@ package edu.hit.yh.gitdata.mine.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 
@@ -10,7 +11,10 @@ import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 
 public class SimpleGspMiningAlgorithm extends AbstractGspMiningAlgorithm<BehaviorPattern> {
 
-	
+	/**
+	 * 初始化算法类，输入序列的最小支持度
+	 * @param surpport
+	 */
 	public SimpleGspMiningAlgorithm(int surpport){
 		super.setSurpport(surpport);
 	}
@@ -25,8 +29,8 @@ public class SimpleGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Behavio
 
 	
 	@Override
-	public List<BehaviorPattern> scanDB(List<BehaviorPattern> patternlist) {
-		// TODO 穿入长度为K的候选序列模式，筛选出支持度满足支持度大于等于K的模式，作为序列模式
+	public List<BehaviorPattern> pruning (List<BehaviorPattern> patternlist) {
+		// TODO 传入长度为K的候选序列模式，筛选出支持度满足支持度大于等于K的模式，作为序列模式
 		if(patternlist.size()==0){//如果初始时pattern个数为0，则扫描数据库，只要大于支持度的项全取出来
 			
 		}else{//同样扫描数据库，通过时间可以位移的方法来判断我们序列模式的计数
@@ -35,6 +39,7 @@ public class SimpleGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Behavio
 		
 		return null;
 	}
+	
 
 	@Override
 	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
@@ -53,6 +58,17 @@ public class SimpleGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Behavio
 		
 		return rawDataList;
 		
+	}
+
+	
+	/**
+	 * 从数据库中取出指定的repo下的某个类型的artifact，这个list是原始的数据，所有的统计支持度都是从这里下手
+	 */
+	@Override
+	public List<Artifact> buildArtifacts(String repo, String ArtifactType) {
+
+		
+		return null;
 	}
 
 	

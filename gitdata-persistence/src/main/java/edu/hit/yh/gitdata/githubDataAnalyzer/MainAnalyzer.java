@@ -29,10 +29,10 @@ public class MainAnalyzer {
 		Session session1 = HibernateUtil.getSessionFactory().openSession();
 		Session session2 = HibernateUtil.getSessionFactory().openSession();
 		UnzipAndDispatcher unzipAndDispatcher1 = new UnzipAndDispatcher(
-				"D://githubRawData", "2014-02-19-11", "2014-05-03-5",
+				"D://githubRawData", "2014-05-01-17", "2014-05-20-0",
 				countDownLatch, session1);
 		UnzipAndDispatcher unzipAndDispatcher2 = new UnzipAndDispatcher(
-				"D://githubRawData", "2013-06-27-6", "2013-12-31-23",
+				"D://githubRawData", "2014-05-20-0", "2014-06-11-0",
 				countDownLatch, session2);
 		long time = System.currentTimeMillis();
 		exec.execute(unzipAndDispatcher1);

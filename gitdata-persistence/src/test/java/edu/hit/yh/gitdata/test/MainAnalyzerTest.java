@@ -10,6 +10,11 @@ public class MainAnalyzerTest {
 		mainAnalyzer.startAnalyze();				
 	}*/
 
+	/**
+	 * 解析tar.gz文件的入口
+	 * @param args
+	 * @throws InterruptedException
+	 */
 	public static void main(String args[]) throws InterruptedException{
 		MainAnalyzer mainAnalyzer = new MainAnalyzer();
 		mainAnalyzer.startAnalyze();

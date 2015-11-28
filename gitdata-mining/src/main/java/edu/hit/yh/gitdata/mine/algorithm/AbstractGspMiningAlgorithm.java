@@ -3,6 +3,8 @@ package edu.hit.yh.gitdata.mine.algorithm;
 import java.util.List;
 
 
+
+import edu.hit.yh.gitdata.mine.module.Artifact;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,8 +28,10 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 	// 算法的总执行
 	public abstract void execute(Object... args);
 
-	//数据库的扫描
-	public abstract List<P> scanDB(List<P> patternlist);
+	public abstract List<Artifact> buildArtifacts(String repo,String ArtifactType); 
+	
+	//算法的剪枝操作
+	public abstract List<P> pruning(List<P> patternlist);
 	
 	//连接操作
 	public abstract List<P> joinOperation(List<P> patternlist);

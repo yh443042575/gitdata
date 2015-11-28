@@ -1,4 +1,4 @@
-package edu.hit.yh.gitdata.dao;
+package edu.hit.yh.gitdata.mine.dao;
 
 /**
  * 针对pullrequest的数据库接口

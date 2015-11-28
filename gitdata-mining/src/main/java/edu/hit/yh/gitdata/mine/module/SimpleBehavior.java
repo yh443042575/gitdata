@@ -22,5 +22,7 @@ public class SimpleBehavior {
 	//动作类型
 	private String eventType;
 	
+	//行为发起时间
+	private String createdAt;
 	
 }

@@ -1,4 +1,4 @@
-package edu.hit.yh.gitdata.util;
+package edu.hit.yh.gitdata.mine.util;
 
 import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
