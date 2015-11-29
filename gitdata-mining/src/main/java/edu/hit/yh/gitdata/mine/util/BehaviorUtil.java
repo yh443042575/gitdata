@@ -37,8 +37,7 @@ public class BehaviorUtil {
 	 * @param detail
 	 * @return
 	 */
-	public String getBehaviorType(String EventType,String detail){
-		
+	public static String getBehaviorType(String EventType,String detail){
 		
 		return behaviorTypeMap.get(EventType+" "+detail);
 		

@@ -6,7 +6,7 @@ public class ArtifactUtilTest extends TestCase {
 	
 	
 	public void testGetissueSimpleBehavior() {
-		ArtifactUtil.getissueSimpleBehavior("jquery/jquery");
+		ArtifactUtil.getIssueSimpleBehavior("jquery/jquery");
 	}
 
 }

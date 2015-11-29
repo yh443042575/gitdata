@@ -1,6 +1,8 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
 
 
 
@@ -28,7 +30,7 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 	// 算法的总执行
 	public abstract void execute(Object... args);
 
-	public abstract List<Artifact> buildArtifacts(String repo,String ArtifactType); 
+	public abstract<T> List<Artifact<T>> buildArtifacts(String repo,String ArtifactType);
 	
 	//算法的剪枝操作
 	public abstract List<P> pruning(List<P> patternlist);
