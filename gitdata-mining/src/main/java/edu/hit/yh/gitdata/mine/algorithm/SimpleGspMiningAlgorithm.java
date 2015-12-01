@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.hql.internal.ast.tree.IsNotNullLogicOperatorNode;
+
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
@@ -30,6 +32,7 @@ public class SimpleGspMiningAlgorithm extends
 	 */ 
 	@Override
 	public void execute(Object... args) {
+<<<<<<< HEAD
 		//原始的数据集合
 		List<Artifact<SimpleBehavior>> rawDataList = this.buildArtifacts(getRepo(), getArtifactType());
 		//迭代生成的行为模式list
@@ -41,6 +44,31 @@ public class SimpleGspMiningAlgorithm extends
 	/** 
 	 * 传入长度为K的候选序列模式，筛选出支持度满足支持度大于等于K的模式，作为序列模式
 	 */ 
+=======
+		// TODO
+		// 简单的GSP执行，扫描数据库->筛选出长度为K的序列模式->连接长度为K的序列模式生成K+1的候选序列模式->再次扫描数据库->...
+		List<List<BehaviorPattern<SimpleBehavior>>> rawDataList = this
+				.getRawData();
+
+		List<Artifact<SimpleBehavior>> artifactList = new ArrayList<Artifact<SimpleBehavior>>();
+		int nowSurpport = 1;
+		boolean algorithmEndFlag = false;
+		/**
+		 * 如果当前的候选序列中还有behavior则算法继续进行
+		 * 1、对当前的候选序列，在artifactList中进行扫描，计数
+		 * 
+		 */
+		while(!algorithmEndFlag){
+			
+			
+		}
+		
+		
+	}
+
+	
+
+>>>>>>> origin/master
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist) {
 		
