@@ -1,14 +1,10 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-
-
-
-import edu.hit.yh.gitdata.mine.module.Artifact;
 import lombok.Getter;
 import lombok.Setter;
+import edu.hit.yh.gitdata.mine.module.Artifact;
 
 /**
  * 算法的一个抽象方法，其中T为行为模式
@@ -19,12 +15,18 @@ import lombok.Setter;
 public abstract class AbstractGspMiningAlgorithm<P> {
 
 	//算法的支持度
+	@Getter
+	@Setter
 	private int surpport;
 	
 	//算法所要挖掘的reposiroty
-	private String programName;
+	@Getter
+	@Setter
+	private String repo;
 	
 	//算法所要挖掘的artifactType
+	@Getter
+	@Setter
 	private String artifactType;
 	
 	// 算法的总执行
@@ -37,32 +39,5 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 	
 	//连接操作
 	public abstract List<P> joinOperation(List<P> patternlist);
-
-	public int getSurpport() {
-		return surpport;
-	}
-
-	public void setSurpport(int surpport) {
-		this.surpport = surpport;
-	}
-
-	public String getProgramName() {
-		return programName;
-	}
-
-	public void setProgramName(String programName) {
-		this.programName = programName;
-	}
-
-	public String getArtifactType() {
-		return artifactType;
-	}
-
-	public void setArtifactType(String artifactType) {
-		this.artifactType = artifactType;
-	}
-	
-	
-	
 
 }
