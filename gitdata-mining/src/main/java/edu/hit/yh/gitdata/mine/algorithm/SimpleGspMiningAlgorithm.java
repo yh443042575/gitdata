@@ -32,43 +32,29 @@ public class SimpleGspMiningAlgorithm extends
 	 */ 
 	@Override
 	public void execute(Object... args) {
-<<<<<<< HEAD
-		//原始的数据集合
-		List<Artifact<SimpleBehavior>> rawDataList = this.buildArtifacts(getRepo(), getArtifactType());
-		//迭代生成的行为模式list
-		List<BehaviorPattern> behaviorPatternList = new ArrayList<BehaviorPattern>();
-		
-		
-	}   
 
-	/** 
-	 * 传入长度为K的候选序列模式，筛选出支持度满足支持度大于等于K的模式，作为序列模式
-	 */ 
-=======
-		// TODO
-		// 简单的GSP执行，扫描数据库->筛选出长度为K的序列模式->连接长度为K的序列模式生成K+1的候选序列模式->再次扫描数据库->...
-		List<List<BehaviorPattern<SimpleBehavior>>> rawDataList = this
-				.getRawData();
-
-		List<Artifact<SimpleBehavior>> artifactList = new ArrayList<Artifact<SimpleBehavior>>();
 		int nowSurpport = 1;
 		boolean algorithmEndFlag = false;
+		List<Artifact<SimpleBehavior>> artifactList = this.buildArtifacts(getRepo(), getArtifactType());
+		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
+		List<BehaviorPattern> resultBehaviorPatterns  = new ArrayList<BehaviorPattern>();
 		/**
 		 * 如果当前的候选序列中还有behavior则算法继续进行
 		 * 1、对当前的候选序列，在artifactList中进行扫描，计数
-		 * 
+		 * 2、筛选掉surpport小于最小支持度的BehaviorPattern
+		 * 3、留下的list继续做连接操作，进而生成新的候选BehaviorPatternList，而上一个候选BehaviorPatternList，则加入到result中
+		 * 4、对第二个序列进行1的操作
 		 */
-		while(!algorithmEndFlag){
+		while(!algorithmEndFlag){//如果候选的序列中还有
+			
 			
 			
 		}
 		
-		
 	}
-
-	
-
->>>>>>> origin/master
+	/**
+	 * 对当前的候选patternlist进行剪枝操作
+	 */
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist) {
 		
