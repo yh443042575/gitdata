@@ -33,7 +33,7 @@ public class SimpleGspMiningAlgorithm extends
 	@Override
 	public void execute(Object... args) {
 
-		int nowSurpport = 1;
+		int nowLength = 1;
 		boolean algorithmEndFlag = false;
 		List<Artifact<SimpleBehavior>> artifactList = this.buildArtifacts(getRepo(), getArtifactType());
 		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
@@ -45,15 +45,50 @@ public class SimpleGspMiningAlgorithm extends
 		 * 3、留下的list继续做连接操作，进而生成新的候选BehaviorPatternList，而上一个候选BehaviorPatternList，则加入到result中
 		 * 4、对第二个序列进行1的操作
 		 */
-		while(!algorithmEndFlag){//如果候选的序列中还有
+		while(!algorithmEndFlag){//如果候选的序列中还有可以连接的项，则继续进行算法
 			
+			if(nowLength==1){//如果是第一次来扫描全表的话，因为BehaviorPatternList没有数据,这时需要扫描全ArtifactList
+				
+				for(int i = 0;i<artifactList.size();i++){//对Artifact中的每一个behaviorSeq
+					
+					List<SimpleBehavior> behaviorSeq = artifactList.get(i).getBehaviorSeq();
+					for(int j = 0;i<behaviorSeq.size();j++){
+						if(!addBehaviorPatternCount(behaviorSeq.get(j),preBehaviorPatterns)){//判断当前的行为是否已经统计过
+							BehaviorPattern<SimpleBehavior> behaviorPattern = new BehaviorPattern<SimpleBehavior>();
+							preBehaviorPatterns.add(behaviorPattern);
+							behaviorPattern.getBehaviorList().add(behaviorSeq.get(j));
+							behaviorPattern.addSurpport();
+						}
+					}
+				}
+				
+			}else {//如果不是第一次，则要把当前的候选序列存入总的result中，然后做连接操作，then,对得到的新的候选序列进行计数
+				resultBehaviorPatterns.addAll(preBehaviorPatterns);
+				
+			}
 			
 			
 		}
 		
 	}
+	
+	
 	/**
-	 * 对当前的候选patternlist进行剪枝操作
+	 * 判断当前的behavior在不在list中（未完成）
+	 * 扫描当前的preBehaviorPatterns，如果存在，则计数+1，返回true
+	 * 如果不在preBehaviorPatterns，则直接返回true
+	 * @param simpleBehavior
+	 * @param preBehaviorPatterns
+	 * @return
+	 */
+	private boolean addBehaviorPatternCount(SimpleBehavior simpleBehavior,
+			List<BehaviorPattern> preBehaviorPatterns) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * 对当前的候选patternlist进行剪枝操作（未完成）
 	 */
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist) {
@@ -68,7 +103,7 @@ public class SimpleGspMiningAlgorithm extends
 	}
 
 	/**
-	 * 对现有的pattern做连接操作
+	 * 对现有的pattern做连接操作（未完成）
 	 */
 	@Override
 	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
@@ -77,7 +112,7 @@ public class SimpleGspMiningAlgorithm extends
 	}
 
 	/**
-	 * 从数据库中取出指定的repo下的某个类型的artifact，这个list是原始的数据，所有的统计支持度都是从这里下手
+	 * 从数据库中取出指定的repo下的某个类型的artifact，这个list是原始的数据，所有的统计支持度都是从这里下手（已完成-未测试）
 	 * artifactType 分为：
 	 * 1、issue
 	 * 2、pullrequest
