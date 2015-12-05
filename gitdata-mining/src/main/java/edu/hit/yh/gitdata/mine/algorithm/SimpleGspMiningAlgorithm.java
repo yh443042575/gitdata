@@ -3,11 +3,8 @@ package edu.hit.yh.gitdata.mine.algorithm;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.hibernate.mapping.Collection;
 
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
@@ -116,7 +113,7 @@ public class SimpleGspMiningAlgorithm extends
 			for(BehaviorPattern behaviorPattern2:patternlist){
 				if(isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
 					List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
-					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern1.getBehaviorList();
+					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
 					simpleBehaviorList1.add(simpleBehaviorList2.get(simpleBehaviorList2.size()-1));
 					List<SimpleBehavior> simpleBehaviorList3 = simpleBehaviorList1;  
 					BehaviorPattern behaviorPattern = new BehaviorPattern<SimpleBehavior>();
@@ -135,8 +132,19 @@ public class SimpleGspMiningAlgorithm extends
 	 * @return
 	 */
 	private boolean isAbleToJoin(BehaviorPattern behaviorPattern1, BehaviorPattern behaviorPattern2) {
-		// TODO Auto-generated method stub
-		return false;
+		List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
+		List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
+		
+		if(simpleBehaviorList1.size()==1){
+			return true;
+		}
+		
+		for(int i=1;i<simpleBehaviorList1.size();i++){
+			if(!simpleBehaviorList1.get(i).equals(simpleBehaviorList2.get(i-1))){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

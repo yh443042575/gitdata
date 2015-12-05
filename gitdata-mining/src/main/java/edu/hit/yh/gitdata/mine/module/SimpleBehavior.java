@@ -25,4 +25,19 @@ public class SimpleBehavior {
 	//行为发起时间
 	private String createdAt;
 	
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof SimpleBehavior)){
+			return false;
+		}
+		SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
+		if(this.actor.equals(simpleBehavior.getActor())
+				&&this.target.equals(simpleBehavior.getTarget())
+				&&this.eventType.equals(simpleBehavior.getEventType())){
+			return true;
+		}
+		return false;
+	}
 }
