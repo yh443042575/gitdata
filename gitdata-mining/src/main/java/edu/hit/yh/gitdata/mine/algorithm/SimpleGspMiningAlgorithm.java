@@ -3,15 +3,16 @@ package edu.hit.yh.gitdata.mine.algorithm;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.hql.internal.ast.tree.IsNotNullLogicOperatorNode;
+import org.hibernate.mapping.Collection;
 
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
-import edu.hit.yh.gitdata.mine.util.ArtifactUtilTest;
 
 public class SimpleGspMiningAlgorithm extends
 		AbstractGspMiningAlgorithm<BehaviorPattern> {
@@ -62,14 +63,13 @@ public class SimpleGspMiningAlgorithm extends
 					}
 				}
 				
-			}else {//如果不是第一次，则要把当前的候选序列存入总的result中，然后做连接操作，then,对得到的新的候选序列进行计数
-				resultBehaviorPatterns.addAll(preBehaviorPatterns);
-				
+			}else {/*如果不是记录长度为1的行为模式，则要把当前的候选序列存入总的result中，
+					然后做连接操作，then,对得到的新的候选序列进行计数*/
+				resultBehaviorPatterns.addAll(preBehaviorPatterns);//这里要深拷贝
+				preBehaviorPatterns = this.joinOperation(preBehaviorPatterns);
+				preBehaviorPatterns = this.pruning(preBehaviorPatterns);
 			}
-			
-			
 		}
-		
 	}
 	
 	
@@ -105,10 +105,38 @@ public class SimpleGspMiningAlgorithm extends
 	/**
 	 * 对现有的pattern做连接操作（未完成）
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
+	public  List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
+		List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(patternlist);
+		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
+		Collections.copy(tempList, patternlist);
 		
-		return null;
+		for(BehaviorPattern behaviorPattern1:tempList){
+			for(BehaviorPattern behaviorPattern2:patternlist){
+				if(isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
+					List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
+					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern1.getBehaviorList();
+					simpleBehaviorList1.add(simpleBehaviorList2.get(simpleBehaviorList2.size()-1));
+					List<SimpleBehavior> simpleBehaviorList3 = simpleBehaviorList1;  
+					BehaviorPattern behaviorPattern = new BehaviorPattern<SimpleBehavior>();
+					behaviorPattern.setBehaviorList(simpleBehaviorList3);
+					behaviorPattern.setSurpport(0);
+					resultList.add(behaviorPattern);
+				}
+			}
+		}
+		return resultList;
+	}
+	/**
+	 * 判断两个pattern能不能一起join
+	 * @param behaviorPattern1
+	 * @param behaviorPattern2
+	 * @return
+	 */
+	private boolean isAbleToJoin(BehaviorPattern behaviorPattern1, BehaviorPattern behaviorPattern2) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	/**
@@ -145,6 +173,20 @@ public class SimpleGspMiningAlgorithm extends
 		}
 
 		return ArtifactUtil.getIssueSimpleBehavior(repo);
+	}
+	
+	public static void main(String args[]){
+		
+		List<String> list1 = new ArrayList<String>();
+		
+		list1.add("呵呵");
+		List<String> list2 = new ArrayList<String>(list1);
+		Collections.copy(list2, list1);
+		list1.remove(0);
+		
+		System.out.println(list1.size());
+		System.out.println(list2.size());
+	
 	}
 
 }

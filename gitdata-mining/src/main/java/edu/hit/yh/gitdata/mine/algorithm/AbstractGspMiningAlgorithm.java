@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import edu.hit.yh.gitdata.mine.module.Artifact;
+import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 
 /**
  * 算法的一个抽象方法，其中T为行为模式
@@ -39,5 +40,8 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 	
 	//连接操作
 	public abstract List<P> joinOperation(List<P> patternlist);
+
+
+	
 
 }
