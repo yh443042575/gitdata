@@ -44,11 +44,8 @@ public class SimpleGspMiningAlgorithm extends
 		 * 4、对第二个序列进行1的操作
 		 */
 		while(!algorithmEndFlag){//如果候选的序列中还有可以连接的项，则继续进行算法
-			
 			if(nowLength==1){//如果是第一次来扫描全表的话，因为BehaviorPatternList没有数据,这时需要扫描全ArtifactList
-				
 				for(int i = 0;i<artifactList.size();i++){//对Artifact中的每一个behaviorSeq
-					
 					List<SimpleBehavior> behaviorSeq = artifactList.get(i).getBehaviorSeq();
 					for(int j = 0;i<behaviorSeq.size();j++){
 						if(!addBehaviorPatternCount(behaviorSeq.get(j),preBehaviorPatterns)){//判断当前的行为是否已经统计过
@@ -65,13 +62,16 @@ public class SimpleGspMiningAlgorithm extends
 				resultBehaviorPatterns.addAll(preBehaviorPatterns);//这里要深拷贝
 				preBehaviorPatterns = this.joinOperation(preBehaviorPatterns);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns);
+				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明算法结束了
+					algorithmEndFlag = true;
+				}
 			}
 		}
 	}
 	
 	
 	/**
-	 * 判断当前的behavior在不在list中（未完成）
+	 * 判断当前的behavior在不在list中（已完成————未测试）
 	 * 扫描当前的preBehaviorPatterns，如果存在，则计数+1，返回true
 	 * 如果不在preBehaviorPatterns，则直接返回true
 	 * @param simpleBehavior
@@ -80,7 +80,13 @@ public class SimpleGspMiningAlgorithm extends
 	 */
 	private boolean addBehaviorPatternCount(SimpleBehavior simpleBehavior,
 			List<BehaviorPattern> preBehaviorPatterns) {
-		// TODO Auto-generated method stub
+		for(BehaviorPattern behaviorPattern:preBehaviorPatterns){
+			List<SimpleBehavior> list = behaviorPattern.getBehaviorList();
+			if(simpleBehavior.equals(list.get(0))){
+				behaviorPattern.addSurpport();
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -100,7 +106,7 @@ public class SimpleGspMiningAlgorithm extends
 	}
 
 	/**
-	 * 对现有的pattern做连接操作（未完成）
+	 * 对现有的pattern做连接操作（已完成——未测试）
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -126,7 +132,7 @@ public class SimpleGspMiningAlgorithm extends
 		return resultList;
 	}
 	/**
-	 * 判断两个pattern能不能一起join
+	 * 判断两个pattern能不能一起join（已完成——未测试）
 	 * @param behaviorPattern1
 	 * @param behaviorPattern2
 	 * @return
