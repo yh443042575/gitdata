@@ -14,6 +14,7 @@ import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
 public class SimpleGspMiningAlgorithm extends
 		AbstractGspMiningAlgorithm<BehaviorPattern> {
 
+	
 	/**
 	 * 初始化算法类，输入序列的最小支持度
 	 * 
@@ -61,11 +62,12 @@ public class SimpleGspMiningAlgorithm extends
 					然后做连接操作，then,对得到的新的候选序列进行计数*/
 				resultBehaviorPatterns.addAll(preBehaviorPatterns);//这里要深拷贝
 				preBehaviorPatterns = this.joinOperation(preBehaviorPatterns);
-				preBehaviorPatterns = this.pruning(preBehaviorPatterns);
+				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明算法结束了
 					algorithmEndFlag = true;
 				}
 			}
+			System.out.println(preBehaviorPatterns.size());
 		}
 	}
 	
@@ -91,16 +93,46 @@ public class SimpleGspMiningAlgorithm extends
 	}
 
 	/**
-	 * 对当前的候选patternlist进行剪枝操作（未完成）
+	 * 对当前的候选patternlist进行剪枝操作（已完成————未测试）
+	 * 统计当前的patternlist中每一个behaviorPattern的支持度，不满足最小支持度的全都放弃
+	 * 四层循环，略有心虚。。。。。>_<
 	 */
 	@Override
-	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist) {
+	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,Object artifacts) {
+		//算法所能容忍的最小支持度
+		int surpport = getSurpport();
+		//算法执行时所需要的原始数据
+		List<Artifact<SimpleBehavior>> artifactList = (List<Artifact<SimpleBehavior>>) artifacts;
+		//经过剪枝所得到的最后的结果，作为下次运算的候选序列
+		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>(); 
 		
-		if (patternlist.size() == 0) {// 如果初始时pattern个数为0，则扫描artifactList，只要大于支持度的项全取出来
-			
-		} else {// 同样扫描数据库，通过时间可以位移的方法来判断我们序列模式的计数
-
+		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){
+			for(Artifact<SimpleBehavior> artifact:artifactList){
+				int point = 0;
+				List<SimpleBehavior> behaviorSeq = artifact.getBehaviorSeq();
+				for(SimpleBehavior preSimpleBehavior:behaviorPattern.getBehaviorList()){
+					int num = behaviorPattern.getBehaviorList().indexOf(preSimpleBehavior);
+					//如果还有搜索下去的必要
+					if((behaviorSeq.size()-point)>=
+							(behaviorPattern.getBehaviorList().size()-
+									num)){
+						for(;point<behaviorSeq.size();point++){
+							if(preSimpleBehavior.equals(behaviorSeq.get(point))){
+								if(num!=behaviorPattern.getBehaviorList().size()){//如果还没有检查完当前behaviorPattern则继续
+									break;
+								}else{//如果扫描成功，则当前的behaviorPattern支持度+1
+									behaviorPattern.addSurpport();
+								}
+							}
+						}
+					}else{
+						break;
+					}
+					
+				}
+			}
 		}
+		
 		
 		return null;
 	}
@@ -191,16 +223,12 @@ public class SimpleGspMiningAlgorithm extends
 	
 	public static void main(String args[]){
 		
-		List<String> list1 = new ArrayList<String>();
-		
-		list1.add("呵呵");
-		List<String> list2 = new ArrayList<String>(list1);
-		Collections.copy(list2, list1);
-		list1.remove(0);
-		
-		System.out.println(list1.size());
-		System.out.println(list2.size());
-	
+		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(2);
+		simpleGspMiningAlgorithm.setRepo("jquery/jquery");
+		simpleGspMiningAlgorithm.setArtifactType("issue");
+		simpleGspMiningAlgorithm.execute(null);
 	}
+
+	
 
 }

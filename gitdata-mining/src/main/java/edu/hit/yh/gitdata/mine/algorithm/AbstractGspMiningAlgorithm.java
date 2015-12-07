@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import edu.hit.yh.gitdata.mine.module.Artifact;
+import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 
 /**
@@ -35,11 +36,12 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 
 	public abstract<T> List<Artifact<T>> buildArtifacts(String repo,String ArtifactType);
 	
-	//算法的剪枝操作
-	public abstract List<P> pruning(List<P> patternlist);
 	
 	//连接操作
 	public abstract List<P> joinOperation(List<P> patternlist);
+	
+	//算法的剪枝操作
+	public abstract  List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist, Object artifacts);
 
 
 	
