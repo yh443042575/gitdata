@@ -3,6 +3,7 @@ package edu.hit.yh.gitdata.mine.algorithm;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,9 +49,10 @@ public class SimpleGspMiningAlgorithm extends
 			if(nowLength==1){//如果是第一次来扫描全表的话，因为BehaviorPatternList没有数据,这时需要扫描全ArtifactList
 				for(int i = 0;i<artifactList.size();i++){//对Artifact中的每一个behaviorSeq
 					List<SimpleBehavior> behaviorSeq = artifactList.get(i).getBehaviorSeq();
-					for(int j = 0;i<behaviorSeq.size();j++){
+					for(int j = 0;j<behaviorSeq.size();j++){
 						if(!addBehaviorPatternCount(behaviorSeq.get(j),preBehaviorPatterns)){//判断当前的行为是否已经统计过
 							BehaviorPattern<SimpleBehavior> behaviorPattern = new BehaviorPattern<SimpleBehavior>();
+							behaviorPattern.setBehaviorList(new ArrayList<SimpleBehavior>());
 							preBehaviorPatterns.add(behaviorPattern);
 							behaviorPattern.getBehaviorList().add(behaviorSeq.get(j));
 							behaviorPattern.addSurpport();
@@ -61,6 +63,8 @@ public class SimpleGspMiningAlgorithm extends
 			}else {/*如果不是记录长度为1的行为模式，则要把当前的候选序列存入总的result中，
 					然后做连接操作，then,对得到的新的候选序列进行计数*/
 				resultBehaviorPatterns.addAll(preBehaviorPatterns);//这里要深拷贝
+				List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(preBehaviorPatterns);
+				
 				preBehaviorPatterns = this.joinOperation(preBehaviorPatterns);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明算法结束了
@@ -218,14 +222,14 @@ public class SimpleGspMiningAlgorithm extends
 			e.printStackTrace();
 		}
 
-		return ArtifactUtil.getIssueSimpleBehavior(repo);
+		return artifactList;
 	}
 	
 	public static void main(String args[]){
 		
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(2);
 		simpleGspMiningAlgorithm.setRepo("jquery/jquery");
-		simpleGspMiningAlgorithm.setArtifactType("issue");
+		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 	}
 

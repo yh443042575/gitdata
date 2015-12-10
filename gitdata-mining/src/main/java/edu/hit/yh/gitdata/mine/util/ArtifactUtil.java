@@ -43,7 +43,7 @@ public class ArtifactUtil {
 		 */
 		
 		//取得跟issuesEvnet有关的行为
-		List<Object[]> issuesEventList = session.createSQLQuery("select actor,target,createdAt,artifactId,action from issuesEvent where repo='"+repo+"'").list();
+		List<Object[]> issuesEventList = session.createSQLQuery("select actor,target,createdAt,artifactId,issueaction from issuesEvent where repo='"+repo+"'").list();
 		for(Object[] objects : issuesEventList ){
 			Artifact<SimpleBehavior> artifact = null;
 			//如果当前动作所处的Artifact是存在的，则在这个artifact中把我们的这个behavior装进去
@@ -53,6 +53,7 @@ public class ArtifactUtil {
 				artifact = new Artifact<SimpleBehavior>();
 				issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
 			}
+			issueArtifacts.add(artifact);
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
 			artifact.getBehaviorSeq().add(simpleBehavior);
 			/**
@@ -71,16 +72,20 @@ public class ArtifactUtil {
 			 * 根据Event的类型和用户具体的动作，得到我们所规定的行为类型
 			 */
 			simpleBehavior.setEventType(BehaviorUtil.getBehaviorType("issuesEvent", StringUtil.objectToString(objects[4])));
+			
 		}
 		
 		
 		//取得跟issuesCommentEvent有关的评论行为
 		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' order by artifactId").list();
 		//handle IssueComment
+		if(issueCommentEventList!=null&&issueCommentEventList.size()>0)
 		for(Object[] objects : issueCommentEventList ){
 			Artifact<SimpleBehavior> artifact = new Artifact<SimpleBehavior>();
+			issueArtifacts.add(artifact);
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
 			artifact.setArtifactId(StringUtil.objectToString(objects[3]));
+			artifact.setBehaviorSeq(new ArrayList<SimpleBehavior>());
 			artifact.getBehaviorSeq().add(simpleBehavior);
 			issueArtifactsMap.put(artifact.getArtifactId(), artifact);
 			/**
