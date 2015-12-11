@@ -60,7 +60,7 @@ public class SimpleGspMiningAlgorithm extends
 						}
 					}
 				}
-				
+				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 			}else {/*如果不是记录长度为1的行为模式，则要把当前的候选序列存入总的result中，
 					然后做连接操作，then,对得到的新的候选序列进行计数*/
 				List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(preBehaviorPatterns);
@@ -74,6 +74,7 @@ public class SimpleGspMiningAlgorithm extends
 			}
 			nowLength++;
 			System.out.println(preBehaviorPatterns.size());
+			
 		}
 		resultBehaviorPatterns.forEach(System.out::println);
 	}
@@ -104,6 +105,7 @@ public class SimpleGspMiningAlgorithm extends
 	 * 统计当前的patternlist中每一个behaviorPattern的支持度，不满足最小支持度的全都放弃
 	 * 四层循环，略有心虚。。。。。>_<
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,Object artifacts) {
 		//算法所能容忍的最小支持度
@@ -121,8 +123,7 @@ public class SimpleGspMiningAlgorithm extends
 					int num = behaviorPattern.getBehaviorList().indexOf(preSimpleBehavior);
 					//如果还有搜索下去的必要
 					if((behaviorSeq.size()-point)>=
-							(behaviorPattern.getBehaviorList().size()-
-									num)){
+							(behaviorPattern.getBehaviorList().size()-num)){
 						for(;point<behaviorSeq.size();point++){
 							if(preSimpleBehavior.equals(behaviorSeq.get(point))){
 								if(num!=behaviorPattern.getBehaviorList().size()){//如果还没有检查完当前behaviorPattern则继续
@@ -140,9 +141,14 @@ public class SimpleGspMiningAlgorithm extends
 			}
 		}
 		
-		preBehaviorPatterns.stream().filter(o->o.getSurpport()>=this.getSurpport()).collect(Collectors.toList());
-		
-		return preBehaviorPatterns;
+		//List<BehaviorPattern> list = patternlist.stream().filter(o->o.getSurpport()>=this.getSurpport());
+		List<BehaviorPattern> list =  new ArrayList<BehaviorPattern>();
+		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){
+			if(behaviorPattern.getSurpport()>=this.getSurpport()){
+				list.add(behaviorPattern);
+			}
+		}
+		return 	list;
 	}
 
 	/**
@@ -182,7 +188,13 @@ public class SimpleGspMiningAlgorithm extends
 		List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
 		
 		if(simpleBehaviorList1.size()==1){
-			return true;
+			if(simpleBehaviorList1.get(0).equals(simpleBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为
+					simpleBehaviorList1.get(0).getCreatedAt().equals(
+							simpleBehaviorList2.get(0).getCreatedAt())){
+				return false;
+			}else{
+				return true;
+			}
 		}
 		
 		for(int i=1;i<simpleBehaviorList1.size();i++){
@@ -234,6 +246,7 @@ public class SimpleGspMiningAlgorithm extends
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(2);
 		simpleGspMiningAlgorithm.setRepo("jquery/jquery");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
+		simpleGspMiningAlgorithm.setSurpport(2);
 		simpleGspMiningAlgorithm.execute(null);
 	}
 

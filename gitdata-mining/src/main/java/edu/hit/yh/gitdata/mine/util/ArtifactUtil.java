@@ -79,15 +79,21 @@ public class ArtifactUtil {
 		//取得跟issuesCommentEvent有关的评论行为
 		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' order by artifactId").list();
 		//handle IssueComment
-		if(issueCommentEventList!=null&&issueCommentEventList.size()>0)
+		if(issueCommentEventList!=null&&issueCommentEventList.size()>0){
+			
 		for(Object[] objects : issueCommentEventList ){
 			Artifact<SimpleBehavior> artifact = new Artifact<SimpleBehavior>();
+			if(issueArtifactsMap.containsKey(StringUtil.objectToString(objects[3]))){
+				artifact = issueArtifactsMap.get(StringUtil.objectToString(objects[3]));
+			}else {//如果map中部存在对应的artifact,则将新new出来的对象put进map中
+				artifact = new Artifact<SimpleBehavior>();
+				artifact.setArtifactId(StringUtil.objectToString(objects[3]));
+				issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
+			}
 			issueArtifacts.add(artifact);
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
-			artifact.setArtifactId(StringUtil.objectToString(objects[3]));
 			artifact.setBehaviorSeq(new ArrayList<SimpleBehavior>());
 			artifact.getBehaviorSeq().add(simpleBehavior);
-			issueArtifactsMap.put(artifact.getArtifactId(), artifact);
 			/**
 			 * set行为的发起者
 			 */
@@ -104,7 +110,7 @@ public class ArtifactUtil {
 			simpleBehavior.setEventType("issueComment");
 			
 		}
-		
+		}
 		return issueArtifacts;
 	}
  
