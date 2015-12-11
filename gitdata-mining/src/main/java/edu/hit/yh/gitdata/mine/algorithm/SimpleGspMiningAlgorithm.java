@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
@@ -62,17 +63,19 @@ public class SimpleGspMiningAlgorithm extends
 				
 			}else {/*如果不是记录长度为1的行为模式，则要把当前的候选序列存入总的result中，
 					然后做连接操作，then,对得到的新的候选序列进行计数*/
-				resultBehaviorPatterns.addAll(preBehaviorPatterns);//这里要深拷贝
 				List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(preBehaviorPatterns);
-				
-				preBehaviorPatterns = this.joinOperation(preBehaviorPatterns);
+				resultBehaviorPatterns.addAll(tempList);//这里要深拷贝
+				preBehaviorPatterns = new ArrayList<BehaviorPattern>();
+				preBehaviorPatterns = this.joinOperation(tempList);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明算法结束了
 					algorithmEndFlag = true;
 				}
 			}
+			nowLength++;
 			System.out.println(preBehaviorPatterns.size());
 		}
+		resultBehaviorPatterns.forEach(System.out::println);
 	}
 	
 	
@@ -137,8 +140,9 @@ public class SimpleGspMiningAlgorithm extends
 			}
 		}
 		
+		preBehaviorPatterns.stream().filter(o->o.getSurpport()>=this.getSurpport()).collect(Collectors.toList());
 		
-		return null;
+		return preBehaviorPatterns;
 	}
 
 	/**
