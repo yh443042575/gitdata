@@ -31,6 +31,7 @@ public class SimpleGspMiningAlgorithm extends
 	 *  
 	 * 简单的GSP执行，扫描数据集合->筛选出长度为K的序列模式->连接长度为K的序列模式生成K+1的候选序列模式->再次扫描数据库->...
 	 */ 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void execute(Object... args) {
 
@@ -105,7 +106,7 @@ public class SimpleGspMiningAlgorithm extends
 	 * 统计当前的patternlist中每一个behaviorPattern的支持度，不满足最小支持度的全都放弃
 	 * 四层循环，略有心虚。。。。。>_<
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,Object artifacts) {
 		//算法所能容忍的最小支持度
@@ -115,8 +116,8 @@ public class SimpleGspMiningAlgorithm extends
 		//经过剪枝所得到的最后的结果，作为下次运算的候选序列
 		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>(); 
 		
-		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){
-			for(Artifact<SimpleBehavior> artifact:artifactList){
+		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){//待验证的每一个patternList
+			for(Artifact<SimpleBehavior> artifact:artifactList){//验证的总artifact集合
 				int point = 0;
 				List<SimpleBehavior> behaviorSeq = artifact.getBehaviorSeq();
 				for(SimpleBehavior preSimpleBehavior:behaviorPattern.getBehaviorList()){
@@ -163,7 +164,7 @@ public class SimpleGspMiningAlgorithm extends
 		
 		for(BehaviorPattern behaviorPattern1:tempList){
 			for(BehaviorPattern behaviorPattern2:patternlist){
-				if(isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
+				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
 					List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
 					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
 					simpleBehaviorList1.add(simpleBehaviorList2.get(simpleBehaviorList2.size()-1));
@@ -186,6 +187,8 @@ public class SimpleGspMiningAlgorithm extends
 	private boolean isAbleToJoin(BehaviorPattern behaviorPattern1, BehaviorPattern behaviorPattern2) {
 		List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
 		List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
+		
+		
 		
 		if(simpleBehaviorList1.size()==1){
 			if(simpleBehaviorList1.get(0).equals(simpleBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为
