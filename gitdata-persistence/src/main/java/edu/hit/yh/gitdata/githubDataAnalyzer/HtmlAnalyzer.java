@@ -68,7 +68,10 @@ public class HtmlAnalyzer {
 		return result;
 	}
 
-	/* 负责向网站发送请求，得到解析的字符串 */
+	/**
+	 *  负责向网站发送请求，得到解析的字符串
+	 * 
+	 * */
 	public String getResource(String url) throws IOException {
 		StringBuilder result = new StringBuilder("");
 		String temp;
@@ -97,7 +100,6 @@ public class HtmlAnalyzer {
 		}catch (java.net.SocketException e) {
 			System.err.println("------------读取失败-----------------：" + url);
 		}
-
 		
 		return result.toString();
 	}

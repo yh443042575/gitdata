@@ -3,6 +3,7 @@ package edu.hit.yh.gitdata.githubDataModel;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.xml.transform.Source;
 
 @Entity
 public class IssueCommentEvent {
@@ -23,6 +24,8 @@ public class IssueCommentEvent {
 	private String createdAt;
 	private String target;
 	private String artifactId;
+	//数据源头
+	private String SourceType;
 	
 	@Id
 	@GeneratedValue
@@ -122,10 +125,12 @@ public class IssueCommentEvent {
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
-	
-	
-	
-	
+	public String getSourceType() {
+		return SourceType;
+	}
+	public void setSourceType(String sourceType) {
+		SourceType = sourceType;
+	}
 	
 	
 }

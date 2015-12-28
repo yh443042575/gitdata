@@ -4,6 +4,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
 @Entity
 public class IssuesEvent {
 	private long id;
@@ -19,6 +23,15 @@ public class IssuesEvent {
 	private String issueUrl;
 	private String createdAt;
 	private String artifactId;
+	@Getter
+	@Setter
+	private String desContent1;
+	@Getter
+	@Setter
+	private String issueContent;
+	@Getter
+	@Setter
+	private String SourceType;
 	
 	@Id
 	@GeneratedValue
