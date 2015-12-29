@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 删除事件
  * @author DHAO
@@ -16,7 +19,7 @@ public class DeleteEvent {
 	private String actor;
 	private String repo;
 	/**
-	 * ref_type只能是branch,type
+	 * ref_type只能是branch,tag
 	 */
 	private String ref_type;
 	/**
@@ -24,6 +27,12 @@ public class DeleteEvent {
 	 */
 	private String ref;
 	private String target;
+	/*
+	 * 何时做的删除
+	 */
+	@Getter
+	@Setter
+	private String deleteAt;
 	
 	@Id
 	@GeneratedValue
