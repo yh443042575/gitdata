@@ -520,9 +520,6 @@ public class IssueDataFromHtml {
 	/*------------------------工具方法------------------------*/
 	
 	
-	
-
-	
 	public static void main(String args[]) throws IOException{
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		String url = "https://github.com/jquery/jquery/issues/2594";

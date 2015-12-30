@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 public class PullRequestReviewCommentEvent {
 
@@ -21,6 +24,9 @@ public class PullRequestReviewCommentEvent {
 	private String target;
 	private String artifactId;
 	
+	@Getter
+	@Setter
+	private String discussionId;
 	@Id
 	@GeneratedValue
 	public long getId() {
