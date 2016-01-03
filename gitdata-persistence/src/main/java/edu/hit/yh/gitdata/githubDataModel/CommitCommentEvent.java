@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * 对某次commit代码进行的评论
@@ -23,7 +26,10 @@ public class CommitCommentEvent {
 	private String body = "";
 	private String target;
 	private String artifactId;
-	
+	@Getter
+	@Setter
+	private String sourceType;
+
 	@Id
 	@GeneratedValue
 	public long getId() {
@@ -86,8 +92,5 @@ public class CommitCommentEvent {
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
-	
-	
-	
-	
+
 }

@@ -236,6 +236,50 @@ public class IssueDataFromHtml {
 	}
 	
 	/**
+	 * 处理unlabeled
+	 */
+	public List<IssuesEvent> processUnLabled(NodeList nodeList,List<IssuesEvent> iList){
+		SimpleNodeIterator sni = nodeList.elements();
+		while(sni.hasMoreNodes()){
+			Node node = sni.nextNode();
+			if (node.getText().contains("class=\"discussion-item discussion-item-unlabeled")) {
+				IssuesEvent issuesEvent = new IssuesEvent();
+				issuesEvent.setIssueAction("unlabeled");
+				List<Node> lableList = new ArrayList<Node>(); 
+				lableList= DownloadUtil.getLableList(node, "style=\"color:", lableList);
+				String lables = "";
+				for(int i=0;i<lableList.size();i++){
+					lables+=lableList.get(i).toPlainTextString();
+					if(i!=lableList.size()-1){
+						lables+=",";
+					}
+				}
+				System.out.println(lables);
+				issuesEvent.setIssueLabels(lables);
+				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
+				issuesEvent.setActor(actorNode.toPlainTextString());
+				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
+				Pattern pattern = Pattern.compile("datetime=\".*\"");
+				Matcher matcher = pattern.matcher(timeNode.getText());
+				if(matcher.find()){
+					String time = matcher.group().split("\"")[1];
+					issuesEvent.setCreatedAt(time);
+				}
+				iList.add(issuesEvent);
+				
+			}else{
+				// 得到该节点的子节点列表
+				NodeList childList = node.getChildren();
+				// 孩子节点为空，说明是值节点
+				if (null != childList) {//如果孩子结点不为空则递归调用
+					processUnLabled(childList,iList);
+				}
+			}
+		}
+		return iList;
+	}
+	
+	/**
 	 * 处理指派某人操作
 	 * 
 	 * 这里注意的是，author标签下是被指派的人，指派人干活的是后面的家伙
@@ -522,11 +566,11 @@ public class IssueDataFromHtml {
 	
 	public static void main(String args[]) throws IOException{
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
-		String url = "https://github.com/jquery/jquery/issues/2594";
+		String url = "https://github.com/jquery/jquery/issues/2633";
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
 		NodeList nodeList = htmlAnalyzer.getNodeList(url);
-		//issueDataFromHtml.processLabled(nodeList, new ArrayList<IssuesEvent>());
-		issueDataFromHtml.getDataFromIssueUrl(url);
+		issueDataFromHtml.processUnLabled(nodeList, new ArrayList<IssuesEvent>());
+		//issueDataFromHtml.getDataFromIssueUrl(url);
 	}
 
 }

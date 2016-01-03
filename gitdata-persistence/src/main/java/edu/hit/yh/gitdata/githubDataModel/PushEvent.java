@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * commit代码的操作
  * @author DHAO
@@ -37,7 +40,15 @@ public class PushEvent {
 	private String createdAt;
 	private String target;
 	private String artifactId;
-	
+	@Getter
+	@Setter
+	private String htmlUrl;
+	@Getter
+	@Setter
+	private String title;
+	@Getter
+	@Setter
+	private String sourceType;
 	@Id
 	@GeneratedValue
 	public long getId() {
