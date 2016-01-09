@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.htmlparser.Node;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import sun.java2d.pipe.SpanShapeRenderer.Simple;
 import edu.hit.yh.gitdata.githubDataAnalyzer.HtmlAnalyzer;
 import edu.hit.yh.gitdata.githubDataModel.DeleteEvent;
 import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
@@ -30,6 +32,13 @@ public class PullDataFromHtml {
 
 	private HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 
+	/**
+	 * 要解析的repository
+	 */
+	@Getter
+	@Setter
+	private String repo;
+	
 	/**
 	 * 处理开启pullrequest的需求
 	 * 
@@ -156,6 +165,48 @@ public class PullDataFromHtml {
 				// 孩子节点为空，说明是值节点
 				if (null != childList) {// 如果孩子结点不为空则递归调用
 					processLabled(childList, pList);
+				}
+			}
+		}
+		return pList;
+	}
+	
+	/**
+	 * 处理unlabeled
+	 */
+	public List<PullRequestEvent> processUnLabled(NodeList nodeList,List<PullRequestEvent> pList){
+		SimpleNodeIterator sni = nodeList.elements();
+		while(sni.hasMoreNodes()){
+			Node node = sni.nextNode();
+			if (node.getText().contains("class=\"discussion-item discussion-item-unlabeled")) {
+				PullRequestEvent p = new PullRequestEvent();
+				p.setAction("unlabeled");
+				List<Node> lableList = new ArrayList<Node>(); 
+				lableList= DownloadUtil.getLableList(node, "style=\"color:", lableList);
+				String lables = "";
+				for(int i=0;i<lableList.size();i++){
+					lables+=lableList.get(i).toPlainTextString();
+					if(i!=lableList.size()-1){
+						lables+=",";
+					}
+				}
+				p.setBody(lables);
+				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
+				p.setActor(actorNode.toPlainTextString());
+				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
+				Pattern pattern = Pattern.compile("datetime=\".*\"");
+				Matcher matcher = pattern.matcher(timeNode.getText());
+				if(matcher.find()){
+					String time = matcher.group().split("\"")[1];
+					p.setCreatedAt(time);
+				}
+				pList.add(p);
+			}else{
+				// 得到该节点的子节点列表
+				NodeList childList = node.getChildren();
+				// 孩子节点为空，说明是值节点
+				if (null != childList) {//如果孩子结点不为空则递归调用
+					processUnLabled(childList,pList);
 				}
 			}
 		}
@@ -471,11 +522,40 @@ public class PullDataFromHtml {
 		 * 2、代码的拥有者或协作者对代码进行评论； 3、代码的拥有者对代码进行codeReview并对某一段代码进行评论
 		 * 4、代码的提交者对代码进行修改 5、代码被主干的拥有者认可，最后将代码merge(push)到主干上
 		 */
-
+		pList = this.processOpenPull(nodeList, pList);
+		pList = this.processClosePull(nodeList, pList);
+		pList = this.processMileStone(nodeList, pList);
+		pList = this.processRemoveMileStone(nodeList, pList);
+		pList = this.processReference(nodeList, pList);
+		pList = this.processLabled(nodeList, pList);
+		pList = this.processUnLabled(nodeList, pList);
+		icList = this.processComment(nodeList, icList);
+		prList = this.processPullRequestReviewComment(nodeList, prList);
+		
+		
 		/**
 		 * 解析所有对象中共有的信息，包括ArtifactId,网页URL，数据来源类型net,网页的repository
 		 */
-
+		String artifactId = null; 
+		Pattern artifactPattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/pull/[a-z[0-9]]+");
+		Matcher matcher = artifactPattern.matcher(url);
+		if(matcher.find()){
+			artifactId = matcher.group();
+		}
+		for(IssueCommentEvent i:icList){
+			i.setArtifactId(artifactId);
+			i.setHtmlUrl(url);
+			i.setSourceType("net");
+			i.setRepo(getRepo());
+		}
+		for(PullRequestEvent p:pList){
+			p.setArtifactId(artifactId);
+			p.setPullrequestHtmlUrl(url);
+			p.setSourceType("net");
+			p.setRepo(getRepo());
+		}
+		
+		
 		/**
 		 * 向数据库中持久化数据
 		 */

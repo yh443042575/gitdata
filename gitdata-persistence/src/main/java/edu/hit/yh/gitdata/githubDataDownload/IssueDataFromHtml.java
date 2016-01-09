@@ -413,7 +413,6 @@ public class IssueDataFromHtml {
 			}
 		}
 		return iList;
-		
 	
 	}
 	
@@ -516,6 +515,7 @@ public class IssueDataFromHtml {
 		iList = this.processReopenIssue(nodeList, iList);
 		icList = this.processComment(nodeList,icList);
 		iList = this.processLabled(nodeList, iList);
+		iList = this.processUnLabled(nodeList, iList);
 		iList = this.processReference(nodeList, iList);
 		iList = this.processAssigned(nodeList, iList);
 		iList = this.processUnassigned(nodeList, iList);

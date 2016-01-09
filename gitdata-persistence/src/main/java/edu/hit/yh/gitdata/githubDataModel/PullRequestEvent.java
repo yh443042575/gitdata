@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /*
  * 与pullrequest相关的事件
  */
@@ -32,6 +35,9 @@ public class PullRequestEvent {
 	private String target;
 	private String artifactId;
 	
+	@Getter
+	@Setter
+	private String sourceType;
 	@Id
 	@GeneratedValue
 	public long getId() {
