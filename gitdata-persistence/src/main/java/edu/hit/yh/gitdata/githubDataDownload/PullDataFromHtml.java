@@ -8,12 +8,14 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.hibernate.Session;
 import org.htmlparser.Node;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import edu.hit.yh.gitdata.githubDataAnalyzer.HtmlAnalyzer;
 import edu.hit.yh.gitdata.githubDataModel.DeleteEvent;
+import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
 import edu.hit.yh.gitdata.githubDataModel.IssuesEvent;
 import edu.hit.yh.gitdata.githubDataModel.PullRequestEvent;
@@ -532,7 +534,6 @@ public class PullDataFromHtml {
 		icList = this.processComment(nodeList, icList);
 		prList = this.processPullRequestReviewComment(nodeList, prList);
 		
-		
 		/**
 		 * 解析所有对象中共有的信息，包括ArtifactId,网页URL，数据来源类型net,网页的repository
 		 */
@@ -554,12 +555,39 @@ public class PullDataFromHtml {
 			p.setSourceType("net");
 			p.setRepo(getRepo());
 		}
-		
+		for(PullRequestReviewCommentEvent pr:prList){
+			pr.setArtifactId(artifactId);
+			pr.setHtmlUrl(url);
+			pr.setSourceType("net");
+			pr.setRepo(getRepo());
+		}
+		for(PushEvent ps:psList){
+			ps.setArtifactId(artifactId);
+			ps.setHtmlUrl(url);
+			ps.setSourceType("net");
+			ps.setRepo(getRepo());
+		}
 		
 		/**
 		 * 向数据库中持久化数据
 		 */
-
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		for(IssueCommentEvent ic:icList){
+			session.save(ic);
+		}
+		for(PullRequestEvent p:pList){
+			session.save(p);
+		}
+		for(PullRequestReviewCommentEvent pr:prList){
+			session.save(pr);
+		}
+		for(PushEvent ps:psList){
+			session.save(ps);
+		}
+		session.getTransaction().commit();
+		session.close();
+		HibernateUtil.closeSessionFactory();
 	}
 
 	public static void main(String args[]) {

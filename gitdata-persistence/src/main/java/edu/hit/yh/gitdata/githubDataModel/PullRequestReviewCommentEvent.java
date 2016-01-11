@@ -27,6 +27,10 @@ public class PullRequestReviewCommentEvent {
 	@Getter
 	@Setter
 	private String discussionId;
+	@Getter
+	@Setter
+	private String sourceType;
+	
 	@Id
 	@GeneratedValue
 	public long getId() {
