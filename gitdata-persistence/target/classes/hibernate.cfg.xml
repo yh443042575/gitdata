@@ -46,7 +46,7 @@
         <mapping class="edu.hit.yh.gitdata.githubDataModel.WatchEvent"/>
         <mapping class="edu.hit.yh.gitdata.githubDataModel.FollowEvent"/>
         <mapping class="edu.hit.yh.gitdata.githubDataModel.CommitUrls"/>
-        
+        <mapping class="edu.hit.yh.gitdata.githubDataModel.ArtifactOwner"/>
     </session-factory>
 
 </hibernate-configuration>

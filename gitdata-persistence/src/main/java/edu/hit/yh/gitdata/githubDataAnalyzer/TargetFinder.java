@@ -7,13 +7,23 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.htmlparser.Node;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.mysql.jdbc.StringUtils;
+
+import edu.hit.yh.gitdata.githubDataModel.ArtifactOwner;
+import edu.hit.yh.gitdata.githubDataModel.CommitCommentEvent;
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
+import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
+import edu.hit.yh.gitdata.githubDataModel.IssuesEvent;
+import edu.hit.yh.gitdata.githubDataModel.PullRequestEvent;
+import edu.hit.yh.gitdata.githubDataModel.PullRequestReviewCommentEvent;
+import edu.hit.yh.gitdata.githubDataModel.PushEvent;
 
 /**
  * 寻找行为的接收者
@@ -38,20 +48,24 @@ public class TargetFinder {
 		     + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$");
 	
 	
+	/*--------------------------基本方法------------------------------*/
 	/**
 	 * 通过开发者每一次行为的谈话内容，识别出该行为是针对谁的
 	 * @param content
 	 * @return
 	 */
 	public static String findTargetInArtifactByContent(String content){
-		StringBuffer target = new StringBuffer("");
-		Pattern pattern = Pattern.compile("@[a-zA-Z]+");
-		Matcher matcher = pattern.matcher(content);
-		while(matcher.find()){
-			target.append(matcher.group()+"+");
+		if(!StringUtils.isNullOrEmpty(content)){
+			StringBuffer target = new StringBuffer("");
+			Pattern pattern = Pattern.compile("@[a-zA-Z]+ ");
+			Matcher matcher = pattern.matcher(content);
+			while(matcher.find()){
+				target.append(matcher.group()+"+");
+			}
+			return target.toString();
+		}else {
+			return null;
 		}
-		return target.toString();
-		
 	}
 	
 	/**
@@ -103,6 +117,28 @@ public class TargetFinder {
 		return target;
 	}
 	
+	public static String findTargetAmongArtifactsByArtifacts(String artifacts,Session session) {
+		if(!StringUtils.isNullOrEmpty(artifacts)){
+			StringBuffer sb = new StringBuffer("");
+			String []artifactIds = artifacts.split(" ");
+			for(String s:artifactIds){
+				Query query = session.createSQLQuery("select distinct(owner) from artifactowner where artifactId = 'https://github.com/"+s+"'");
+				List<String> ownerList = query.list();
+				for(String o:ownerList){
+					sb.append(o+"+");
+				}
+			}
+			System.out.println("atar"+sb.toString());
+			return sb.toString();
+		}else {
+			return null;
+		}
+		
+		
+		
+	}
+	
+	
 	/**
 	 * 
 	 * 处理TargetNodeList，进而得到target
@@ -117,7 +153,6 @@ public class TargetFinder {
 			if (node.getText().matches(
 					"div class=\"commit-desc\".*+")) {// add
 				target =  handleUrlTarget(node);
-				
 			}else {
 				// 得到该节点的子节点列表
 				NodeList childList = node.getChildren();
@@ -153,14 +188,131 @@ public class TargetFinder {
 		sb.delete(sb.length()-1, sb.length());
 		return sb.toString();
 	}
-}
+	/*-----------------------对外暴露的方法----------------------------*/
+	/**
+	 * 以下则是针对各种event的分析
+	 * 通过两个维度去寻找某个行为所针对的对象
+	 * @param repo
+	 */
+	public static void findCommitCommentEventTarget(String repo,Session session){
+		Query query = session.createSQLQuery("select * from CommitCommentEvent where sourceType = 'net' ").addEntity(CommitCommentEvent.class);
+		List<CommitCommentEvent> ccList = query.list();
+		for(CommitCommentEvent e:ccList){
+			String ctar = findTargetInArtifactByContent(e.getBody());
+			if(!StringUtils.isNullOrEmpty(ctar)){
+				e.setTarget(ctar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" ctar:"+ctar);
+			e.setTarget(ctar);
+		}
+	}
+	
+	public static void findIssueCommentEventTarget(String repo,Session session){
+		Query query = session.createSQLQuery("select * from IssueCommentEvent where sourceType = 'net' ").addEntity(IssueCommentEvent.class);
+		List<IssueCommentEvent> icList = query.list();
+		for(IssueCommentEvent e:icList){
+			String ctar = findTargetInArtifactByContent(e.getCommentBody());
+			if(!StringUtils.isNullOrEmpty(ctar)){
+				e.setTarget(ctar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" ctar:"+ctar);
+			e.setTarget(ctar);
+		}
+	}
+	
+	public static void findIssuesEventTarget(String repo,Session session){
+		Query query = session.createSQLQuery("select * from IssuesEvent where sourceType = 'net' ").addEntity(IssuesEvent.class);
+		List<IssuesEvent> iList = query.list();
+		for(IssuesEvent e:iList){
+			String atar = "";
+			if(e.getIssueAction().equals("ref")){
+				atar = findTargetAmongArtifactsByArtifacts(e.getDesContent1(), session); 
+			}else if(e.getIssueAction().equals("assignee")){
+				atar +=e.getIssueContent(); 
+			}
+			if(!StringUtils.isNullOrEmpty(atar)){
+				e.setTarget(atar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" atar:"+atar);
+		}
+	}
+	
+	/**
+	 * 1、对于指派动作来说，作用目标为被指派的人
+	 * 2、对于ref动作来说，作用目标为所涉及到的artifact的拥有者
+	 * @param repo
+	 * @param session
+	 */
+	public static void findPullrequestEventTarget(String repo,Session session){
+		Query query = session.createSQLQuery("select * from PullrequestEvent where sourceType = 'net' ").addEntity(PullRequestEvent.class);
+		List<PullRequestEvent> pList = query.list();
+		for(PullRequestEvent e:pList){
+			String atar = "";
+			if(e.getAction().equals("ref")){
+				atar = findTargetAmongArtifactsByArtifacts(e.getPullrequestBaseRef(), session); 
+			}else if(e.getAction().equals("assignee")){
+				atar +=e.getPullrequestAssgnee(); 
+			}
+			if(!StringUtils.isNullOrEmpty(atar)){
+				e.setTarget(atar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" atar:"+atar);
+		}
+	}
+	
+	public static void findPullrequestReviewCommentTarget(String repo,Session session){
+		Query query = session.createSQLQuery("select * from PullRequestReviewCommentEvent where sourceType = 'net' ").addEntity(PullRequestReviewCommentEvent.class);
+		List<PullRequestReviewCommentEvent> prList = query.list();
+		for(PullRequestReviewCommentEvent e:prList){
+			String ctar = findTargetInArtifactByContent(e.getCommentBody());
+			if(!StringUtils.isNullOrEmpty(ctar)){
+				e.setTarget(ctar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" ctar:"+ctar);
+			e.setTarget(ctar);
+		}
+	}
+	
+	public static void findPushEventTarget(String repoString ,Session session){
+		Query query = session.createSQLQuery("select * from pushEvent where sourceType = 'net' ").addEntity(PushEvent.class);
+		List<PushEvent> pList = query.list();
+		for(PushEvent e:pList){
+			String atar = findTargetAmongArtifactsByArtifacts(e.getTitle(), session);
+			if(!StringUtils.isNullOrEmpty(atar)){
+				e.setTarget(atar);
+				session.beginTransaction();
+				session.update(e);
+				session.getTransaction().commit();
+			}
+			System.out.println(e.getArtifactId()+" atar:"+atar);
+		}
+	}
+	
+	public static void main(String args[]){
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		//TargetFinder.findCommitCommentEventTarget("jquery/jquery/", session);
+		//TargetFinder.findPushEventTarget("jquery/jquery/", session);
+		//TargetFinder.findIssueCommentEventTarget("jquery/jquery/", session);
+		//TargetFinder.findPullrequestEventTarget("jquery/jquery/", session);
+		//TargetFinder.findIssuesEventTarget("jquery/jquery/", session);
+		TargetFinder.findPullrequestReviewCommentTarget("jquery/jquery/", session);
+		HibernateUtil.closeSessionFactory();
+	}
+	
 
-/*这是一个非常牛B的网址的正则表达式
- * Pattern pattern = Pattern.compile("(http|https|ftp)\\://([a-zA-Z0-9\\.\\-]+(\\:[a-zA-"   
-   + "Z0-9\\.&%\\$\\-]+)*@)?((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{"   
-   + "2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}"   
-   + "[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|"   
-   + "[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-"   
-   + "4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|([a-zA-Z0"   
-   + "-9\\-]+\\.)*[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,4})(\\:[0-9]+)?(/"   
-   + "[^/][a-zA-Z0-9\\.\\,\\?\\'\\\\/\\+&%\\$\\=~_\\-@]*)*");*/
+}

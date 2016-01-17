@@ -69,7 +69,7 @@ public class HtmlAnalyzer {
 	}
 
 	/**
-	 *  负责向网站发送请求，得到解析的字符串
+	 * 负责向网站发送请求，得到解析的字符串
 	 * 
 	 * */
 	public String getResource(String url) throws IOException {
@@ -85,9 +85,10 @@ public class HtmlAnalyzer {
 		try {
 			httpURLConnection.connect();
 			if (httpURLConnection.getResponseCode() != 404) {// 检测response状态码
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-						httpURLConnection.getInputStream()));
-				
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(
+								httpURLConnection.getInputStream()));
+
 				while ((temp = reader.readLine()) != null) {
 					result.append(temp);
 				}
@@ -97,10 +98,10 @@ public class HtmlAnalyzer {
 			}
 		} catch (java.net.ConnectException e) {
 			System.err.println("------------超时的URL-----------------：" + url);
-		}catch (java.net.SocketException e) {
+		} catch (java.net.SocketException e) {
 			System.err.println("------------读取失败-----------------：" + url);
 		}
-		
+
 		return result.toString();
 	}
 
@@ -207,12 +208,15 @@ public class HtmlAnalyzer {
 
 					htmlNodeList = visitor.getBody();
 
+					htmlPage = "";
 				} else {
+					htmlPage = "";
 					return null;
 				}
 
 			} else {
 				result = "404 not found Exception";
+				htmlPage = "";
 			}
 
 		} catch (ParserException e) {
@@ -220,6 +224,29 @@ public class HtmlAnalyzer {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			return htmlNodeList;
+		}
+	}
+
+	/**
+	 * 直接利用网页原码生成nodelist
+	 * @param homePage
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	public NodeList getNodeListByHtmlPage(String homePage) {
+		try {
+			if (homePage != null) {
+				Parser htmlParser = new Parser(homePage);
+				HtmlPage visitor = new HtmlPage(htmlParser);
+				htmlParser.visitAllNodesWith(visitor);
+				htmlNodeList = visitor.getBody();
+			} else {
+				return null;
+			}
+		} catch (ParserException e) {
 			e.printStackTrace();
 		} finally {
 			return htmlNodeList;

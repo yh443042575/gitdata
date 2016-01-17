@@ -1,5 +1,6 @@
 package edu.hit.yh.gitdata.githubDataDownload;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,6 +15,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import edu.hit.yh.gitdata.githubDataAnalyzer.HtmlAnalyzer;
+import edu.hit.yh.gitdata.githubDataModel.ArtifactOwner;
 import edu.hit.yh.gitdata.githubDataModel.DeleteEvent;
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
@@ -34,6 +36,9 @@ public class PullDataFromHtml {
 
 	private HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 
+	@Getter
+	@Setter
+	private Session session ;
 	/**
 	 * 要解析的repository
 	 */
@@ -386,11 +391,11 @@ public class PullDataFromHtml {
 				Node anotherAtifactNode = DownloadUtil.getSomeChild(node,
 						"class=\"title-link\"");
 				pullRequestEvent
-						.setBody(anotherAtifactNode.toPlainTextString());
+						.setBody(anotherAtifactNode == null?"":anotherAtifactNode.toPlainTextString());
 				Pattern artifactPattern = Pattern
 						.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
 				Matcher artifactMatcher = artifactPattern
-						.matcher(anotherAtifactNode.getText());
+						.matcher(anotherAtifactNode == null?"":anotherAtifactNode.getText());
 				if (artifactMatcher.find()) {
 					String anotherAtifact = artifactMatcher.group();
 					pullRequestEvent.setPullrequestBaseRef(anotherAtifact);
@@ -398,7 +403,7 @@ public class PullDataFromHtml {
 				}
 				Node actorNode = DownloadUtil.getSomeChild(node,
 						"class=\"author\"");
-				pullRequestEvent.setActor(actorNode.toPlainTextString());
+				pullRequestEvent.setActor(actorNode==null?"":actorNode.toPlainTextString());
 				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
 				Pattern pattern = Pattern.compile("datetime=\".*\"");
 				Matcher matcher = pattern.matcher(timeNode.getText());
@@ -508,13 +513,131 @@ public class PullDataFromHtml {
 	
 	}
 	
+	/**
+	 * 处理指派某人操作
+	 * 
+	 * 这里注意的是，author标签下是被指派的人，指派人干活的是后面的家伙
+	 * 如果找不到指派人的那个node，则是开发者自己指派自己
+	 * @param nodeList
+	 * @param iList
+	 * @return
+	 */
+	private List<PullRequestEvent> processAssigned(NodeList nodeList,List<PullRequestEvent> pList){
+		SimpleNodeIterator sni = nodeList.elements();
+		while(sni.hasMoreNodes()){
+			Node node = sni.nextNode();
+			if (node.getText().contains("class=\"discussion-item discussion-item-assigned\"")) {
+				PullRequestEvent pEvent = new PullRequestEvent();
+				pEvent.setAction("assigned");
+				Node assignedNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
+				pEvent.setPullrequestAssgnee(assignedNode==null?"":assignedNode.toPlainTextString());
+				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"discussion-item-entity\"");
+				if(actorNode!=null){
+					pEvent.setActor(actorNode.toPlainTextString());
+				}else{
+					pEvent.setActor(assignedNode.toPlainTextString());
+				}
+				System.out.println(actorNode.toPlainTextString());
+				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
+				Pattern pattern = Pattern.compile("datetime=\".*\"");
+				Matcher matcher = pattern.matcher(timeNode.getText());
+				if(matcher.find()){
+					String time = matcher.group().split("\"")[1];
+					pEvent.setCreatedAt(time);
+				}
+				pList.add(pEvent);
+				
+			}else{
+				// 得到该节点的子节点列表
+				NodeList childList = node.getChildren();
+				// 孩子节点为空，说明是值节点
+				if (null != childList) {//如果孩子结点不为空则递归调用
+					processAssigned(childList,pList);
+				}
+			}
+		}
+		return pList;
+
+	}
+	
+	/**
+	 * 处理取消指派某人操作
+	 * 
+	 * 跟之前一样，取消指派的是后面的家伙
+	 * @param nodeList
+	 * @param pList
+	 * @return
+	 */
+	private List<PullRequestEvent> processUnassigned(NodeList nodeList,List<PullRequestEvent> pList){
+		SimpleNodeIterator sni = nodeList.elements();
+		while(sni.hasMoreNodes()){
+			Node node = sni.nextNode();
+			if (node.getText().contains("class=\"discussion-item discussion-item-unassigned\"")) {
+				PullRequestEvent pEvent = new PullRequestEvent();
+				pEvent.setAction("assigned");
+				Node assignedNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
+				pEvent.setPullrequestAssgnee(assignedNode.toPlainTextString());
+				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"discussion-item-entity\"");
+				if(actorNode!=null){
+					pEvent.setActor(actorNode.toPlainTextString());
+				}else{
+					pEvent.setActor(assignedNode.toPlainTextString());
+				}
+				System.out.println(actorNode.toPlainTextString());
+				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
+				Pattern pattern = Pattern.compile("datetime=\".*\"");
+				Matcher matcher = pattern.matcher(timeNode.getText());
+				if(matcher.find()){
+					String time = matcher.group().split("\"")[1];
+					pEvent.setCreatedAt(time);
+				}
+				pList.add(pEvent);
+				
+			}else{
+				// 得到该节点的子节点列表
+				NodeList childList = node.getChildren();
+				// 孩子节点为空，说明是值节点
+				if (null != childList) {//如果孩子结点不为空则递归调用
+					processUnassigned(childList,pList);
+				}
+			}
+		}
+		return pList;
+
+	}
+	
+	public String processArtifactId(String nodeList){
+		String artifactId = "";
+		Pattern artifactPattern = Pattern.compile("https://github.com/[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
+		Matcher matcher = artifactPattern.matcher(nodeList);
+		if(matcher.find()){
+			artifactId = matcher.group();
+		}
+		return artifactId;
+	}
+	
+	
 	public void getDataFromPullUrl(String url) {
 
 		/**
 		 * 将数据填充到issueCommentEvent对象或IssuesEvent对象中，并用hibernate实现存储
 		 * 
 		 */
-		NodeList nodeList = htmlAnalyzer.getNodeList(url);
+		NodeList nodeList = null;
+		String artifactId = ""; 
+		try {
+			String homePage = htmlAnalyzer.getResource(url);
+			nodeList = htmlAnalyzer.getNodeListByHtmlPage(homePage);
+			artifactId = processArtifactId(homePage);
+			if(!(artifactId).equals(url)){
+				System.out.println("artifact 已经转换为其他形式");
+				return ;
+			}
+		} catch (Exception e) {
+			System.out.println("出现异常");
+			return ;
+		}
+		
 		List<PullRequestEvent> pList = new ArrayList<PullRequestEvent>();
 		List<IssueCommentEvent> icList = new ArrayList<IssueCommentEvent>();
 		List<PullRequestReviewCommentEvent> prList = new ArrayList<PullRequestReviewCommentEvent>();
@@ -532,17 +655,12 @@ public class PullDataFromHtml {
 		pList = this.processLabled(nodeList, pList);
 		pList = this.processUnLabled(nodeList, pList);
 		icList = this.processComment(nodeList, icList);
-		prList = this.processPullRequestReviewComment(nodeList, prList);
-		
+		/*prList = this.processPullRequestReviewComment(nodeList, prList);*/
+		pList = this.processAssigned(nodeList, pList);
+		pList = this.processUnassigned(nodeList, pList);
 		/**
 		 * 解析所有对象中共有的信息，包括ArtifactId,网页URL，数据来源类型net,网页的repository
 		 */
-		String artifactId = null; 
-		Pattern artifactPattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/pull/[a-z[0-9]]+");
-		Matcher matcher = artifactPattern.matcher(url);
-		if(matcher.find()){
-			artifactId = matcher.group();
-		}
 		for(IssueCommentEvent i:icList){
 			i.setArtifactId(artifactId);
 			i.setHtmlUrl(url);
@@ -571,13 +689,18 @@ public class PullDataFromHtml {
 		/**
 		 * 向数据库中持久化数据
 		 */
-		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		for(IssueCommentEvent ic:icList){
 			session.save(ic);
 		}
 		for(PullRequestEvent p:pList){
 			session.save(p);
+			if(p.getAction().equals("open")){
+				ArtifactOwner artifactOwner = new ArtifactOwner();
+				artifactOwner.setArtifactId(artifactId);
+				artifactOwner.setOwner(p.getActor());
+				session.save(artifactOwner);
+			}
 		}
 		for(PullRequestReviewCommentEvent pr:prList){
 			session.save(pr);
@@ -586,17 +709,27 @@ public class PullDataFromHtml {
 			session.save(ps);
 		}
 		session.getTransaction().commit();
-		session.close();
-		HibernateUtil.closeSessionFactory();
+		
 	}
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		PullDataFromHtml pullDataFromHtml = new PullDataFromHtml();
-		String url = "https://github.com/jquery/jquery/pull/2479";
-		NodeList nodeList = htmlAnalyzer.getNodeList(url);
-		pullDataFromHtml.processMileStone(nodeList,
-				new ArrayList<PullRequestEvent>());
-
+		pullDataFromHtml.setRepo("jquery/jquery/");
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		pullDataFromHtml.setSession(session);
+		for(int i=1740;i<=2700;i++){
+			try {
+				String url = "https://github.com/jquery/jquery/pull/"+String.valueOf(i);
+				System.out.println("解析第"+i+"个");
+				pullDataFromHtml.getDataFromPullUrl(url);
+			} catch (Exception e) {
+				/**
+				 * 直接吃掉异常，进行下一个url的解析
+				 */
+				continue;
+			}
+		}
+		HibernateUtil.closeSessionFactory();
 	}
 }

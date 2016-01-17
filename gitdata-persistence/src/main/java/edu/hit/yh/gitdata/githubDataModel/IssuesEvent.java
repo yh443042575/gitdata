@@ -33,6 +33,10 @@ public class IssuesEvent {
 	@Setter
 	private String SourceType;
 	
+	@Getter
+	@Setter
+	private String target;
+	
 	@Id
 	@GeneratedValue
 	public long getId() {

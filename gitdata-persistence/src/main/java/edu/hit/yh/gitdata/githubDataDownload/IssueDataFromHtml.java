@@ -15,6 +15,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import edu.hit.yh.gitdata.githubDataAnalyzer.HtmlAnalyzer;
+import edu.hit.yh.gitdata.githubDataModel.ArtifactOwner;
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.githubDataModel.IssueCommentEvent;
 import edu.hit.yh.gitdata.githubDataModel.IssuesEvent;
@@ -33,6 +34,9 @@ public class IssueDataFromHtml {
 	
 	private HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 	
+	@Getter
+	@Setter
+	private Session session;
 	/**
 	 * 要解析的repository
 	 */
@@ -126,16 +130,16 @@ public class IssueDataFromHtml {
 				IssuesEvent issuesEvent = new IssuesEvent();
 				issuesEvent.setIssueAction("ref");
 				Node anotherAtifactNode = DownloadUtil.getSomeChild(node, "class=\"title-link\"");
-				issuesEvent.setIssueContent(anotherAtifactNode.toPlainTextString());
+				issuesEvent.setIssueContent(anotherAtifactNode==null?"":anotherAtifactNode.toPlainTextString());
 				Pattern artifactPattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
-				Matcher artifactMatcher = artifactPattern.matcher(anotherAtifactNode.getText());
+				Matcher artifactMatcher = artifactPattern.matcher(anotherAtifactNode==null?"":anotherAtifactNode.getText());
 				if(artifactMatcher.find()){
 					String anotherAtifact = artifactMatcher.group();
 					issuesEvent.setDesContent1(anotherAtifact);
 					System.out.println(anotherAtifact);
 				}
 				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
-				issuesEvent.setActor(actorNode.toPlainTextString());
+				issuesEvent.setActor(actorNode==null?"":actorNode.toPlainTextString());
 				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
 				Pattern pattern = Pattern.compile("datetime=\".*\"");
 				Matcher matcher = pattern.matcher(timeNode.getText());
@@ -497,6 +501,16 @@ public class IssueDataFromHtml {
 		return iList;
 	}
 	
+	public String processArtifactId(String nodeList){
+		String artifactId = "";
+		Pattern artifactPattern = Pattern.compile("https://github.com/[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
+		Matcher matcher = artifactPattern.matcher(nodeList);
+		if(matcher.find()){
+			artifactId = matcher.group();
+		}
+		return artifactId;
+	}
+	
 	/*------------------------主要功能方法------------------------*/
 	/**
 	 * 对外暴露的方法，用于获取url网页当中的数据，
@@ -507,7 +521,21 @@ public class IssueDataFromHtml {
 		/**
 		 * 将数据填充到issueCommentEvent对象或IssuesEvent对象中，并用hibernate实现存储
 		 */
-		NodeList nodeList = htmlAnalyzer.getNodeList(url);
+		NodeList nodeList = null;
+		String artifactId = ""; 
+		try {
+			String homePage = htmlAnalyzer.getResource(url);
+			nodeList = htmlAnalyzer.getNodeListByHtmlPage(homePage);
+			artifactId = processArtifactId(homePage);
+			System.out.println(artifactId);
+			if(!(artifactId).equals(url)){
+				System.out.println("当前artifact已经转换为其他形式");
+				return ;
+			}
+		} catch (Exception e) {
+			System.out.println("出现异常");
+			return ;
+		}
 		List<IssueCommentEvent> icList = new ArrayList<IssueCommentEvent>();
 		List<IssuesEvent> iList = new ArrayList<IssuesEvent>();
 		iList = this.processOpenIssue(nodeList,iList);
@@ -525,12 +553,8 @@ public class IssueDataFromHtml {
 		/**
 		 * 解析所有对象中共有的信息，包括ArtifactId,网页URL，数据来源类型net,网页的repository
 		 */
-		String artifactId = null; 
-		Pattern artifactPattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/issues/[a-z[0-9]]+");
-		Matcher matcher = artifactPattern.matcher(url);
-		if(matcher.find()){
-			artifactId = matcher.group();
-		}
+		
+		
 		for(IssueCommentEvent i:icList){
 			i.setArtifactId(artifactId);
 			i.setHtmlUrl(url);
@@ -546,17 +570,20 @@ public class IssueDataFromHtml {
 		/**
 		 * 向数据库中持久化数据
 		 */
-		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		for(IssueCommentEvent ic:icList){
 			session.save(ic);
 		}
 		for(IssuesEvent i:iList){
 			session.save(i);
+			if(i.getIssueAction().equals("open")){
+				ArtifactOwner artifactOwner = new ArtifactOwner();
+				artifactOwner.setArtifactId(artifactId);
+				artifactOwner.setOwner(i.getActor());
+				session.save(artifactOwner);
+			}
 		}
 		session.getTransaction().commit();
-		session.close();
-		HibernateUtil.closeSessionFactory();
 		
 	}
 	
@@ -564,13 +591,24 @@ public class IssueDataFromHtml {
 	/*------------------------工具方法------------------------*/
 	
 	
-	public static void main(String args[]) throws IOException{
+	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
-		String url = "https://github.com/jquery/jquery/issues/2633";
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
-		NodeList nodeList = htmlAnalyzer.getNodeList(url);
-		issueDataFromHtml.processUnLabled(nodeList, new ArrayList<IssuesEvent>());
-		//issueDataFromHtml.getDataFromIssueUrl(url);
+		issueDataFromHtml.setRepo("jquery/jquery/");
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		issueDataFromHtml.setSession(session);
+		for(int i=1669;i<=2700;i++){
+			try {
+				String url = "https://github.com/jquery/jquery/issues/"+String.valueOf(i);
+				System.out.println("解析第"+i+"个");
+				issueDataFromHtml.getDataFromIssueUrl(url);
+			} catch (Exception e) {
+				/**
+				 * 直接吃掉异常，进行下一个url的解析
+				 */
+				continue;
+			}
+		}
+		HibernateUtil.closeSessionFactory();
 	}
-
 }

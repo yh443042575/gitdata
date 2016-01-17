@@ -26,15 +26,21 @@ public class CommitHtml {
 	public static void getUrls(String repo,String branch,int pages){
 		List<CommitUrls> sList = new ArrayList<CommitUrls>();
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		for(int i=1;i<=pages;i++){
+		for(int i=41;i<=pages;i++){
+			System.out.println("解析第"+i+"个页面");
+			session.beginTransaction();
 			NodeList nodeList = htmAnalyzer.getNodeList("https://github.com/"+repo+"commits/"+branch+"?page="+i);
 			processUrls(nodeList, sList, repo);
 			for(CommitUrls c:sList){
 				session.save(c);
 			}
+			session.getTransaction().commit();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		session.getTransaction().commit();
 		session.close();
 		HibernateUtil.closeSessionFactory();
 	}
