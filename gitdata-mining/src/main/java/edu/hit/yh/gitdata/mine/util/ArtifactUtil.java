@@ -17,7 +17,7 @@ import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
  *
  */
 public class ArtifactUtil {
-
+	
 	/**
 	 * 获取跟Issue有关的行为
 	 * @param repo
@@ -51,9 +51,11 @@ public class ArtifactUtil {
 				artifact = issueArtifactsMap.get(StringUtil.objectToString(objects[3]));
 			}else {//如果map中部存在对应的artifact,则将新new出来的对象put进map中
 				artifact = new Artifact<SimpleBehavior>();
+				List<SimpleBehavior> behaviors = new ArrayList<SimpleBehavior>();
+				artifact.setBehaviorSeq(behaviors);
+				artifact.setArtifactId(StringUtil.objectToString(objects[3]));
 				issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
 			}
-			issueArtifacts.add(artifact);
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
 			artifact.getBehaviorSeq().add(simpleBehavior);
 			/**
@@ -72,12 +74,17 @@ public class ArtifactUtil {
 			 * 根据Event的类型和用户具体的动作，得到我们所规定的行为类型
 			 */
 			simpleBehavior.setEventType(BehaviorUtil.getBehaviorType("issuesEvent", StringUtil.objectToString(objects[4])));
-			
+			if(BehaviorUtil.getBehaviorType("issuesEvent", StringUtil.objectToString(objects[4]))==null){
+				System.out.println("有空值");
+			}
+			issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
+			System.out.println("测试1:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
 		}
 		
 		
 		//取得跟issuesCommentEvent有关的评论行为
 		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' order by artifactId").list();
+		System.out.println("测试1:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
 		//handle IssueComment
 		if(issueCommentEventList!=null&&issueCommentEventList.size()>0){
 			
@@ -87,12 +94,11 @@ public class ArtifactUtil {
 				artifact = issueArtifactsMap.get(StringUtil.objectToString(objects[3]));
 			}else {//如果map中部存在对应的artifact,则将新new出来的对象put进map中
 				artifact = new Artifact<SimpleBehavior>();
+				artifact.setBehaviorSeq(new ArrayList<SimpleBehavior>());
 				artifact.setArtifactId(StringUtil.objectToString(objects[3]));
 				issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
 			}
-			issueArtifacts.add(artifact);
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
-			artifact.setBehaviorSeq(new ArrayList<SimpleBehavior>());
 			artifact.getBehaviorSeq().add(simpleBehavior);
 			/**
 			 * set行为的发起者
@@ -108,9 +114,15 @@ public class ArtifactUtil {
 			simpleBehavior.setCreatedAt(StringUtil.objectToString(objects[2]));
 			
 			simpleBehavior.setEventType("issueComment");
-			
+			issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
+			System.out.println("测试2:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
+
 		}
 		}
+		for(String key:issueArtifactsMap.keySet()){
+			issueArtifacts.add(issueArtifactsMap.get(key));
+		}
+		System.out.println("测试:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
 		return issueArtifacts;
 	}
  

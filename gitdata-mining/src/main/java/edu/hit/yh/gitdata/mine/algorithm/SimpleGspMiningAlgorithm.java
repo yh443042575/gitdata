@@ -167,8 +167,11 @@ public class SimpleGspMiningAlgorithm extends
 				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
 					List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
 					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
-					simpleBehaviorList1.add(simpleBehaviorList2.get(simpleBehaviorList2.size()-1));
-					List<SimpleBehavior> simpleBehaviorList3 = simpleBehaviorList1;  
+					List<SimpleBehavior> joinList = new ArrayList<SimpleBehavior>(simpleBehaviorList1);
+					Collections.copy(joinList, simpleBehaviorList1);
+					joinList.add(simpleBehaviorList2.get(simpleBehaviorList2.size()-1));
+					System.out.println(joinList.size());
+					List<SimpleBehavior> simpleBehaviorList3 = joinList;  
 					BehaviorPattern behaviorPattern = new BehaviorPattern<SimpleBehavior>();
 					behaviorPattern.setBehaviorList(simpleBehaviorList3);
 					behaviorPattern.setSurpport(0);
@@ -189,9 +192,8 @@ public class SimpleGspMiningAlgorithm extends
 		List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
 		
 		
-		
 		if(simpleBehaviorList1.size()==1){
-			if(simpleBehaviorList1.get(0).equals(simpleBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为
+			if(simpleBehaviorList1.get(0).equals(simpleBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
 					simpleBehaviorList1.get(0).getCreatedAt().equals(
 							simpleBehaviorList2.get(0).getCreatedAt())){
 				return false;
@@ -247,7 +249,7 @@ public class SimpleGspMiningAlgorithm extends
 	public static void main(String args[]){
 		
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(2);
-		simpleGspMiningAlgorithm.setRepo("jquery/jquery");
+		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.setSurpport(2);
 		simpleGspMiningAlgorithm.execute(null);

@@ -22,10 +22,12 @@ public class SimpleBehavior {
 	//动作类型
 	private String eventType;
 	
+	//具体的操作
+	private String action;
+	
 	//行为发起时间
 	private String createdAt;
 	
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -34,7 +36,7 @@ public class SimpleBehavior {
 		}
 		SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
 		if(this.actor.equals(simpleBehavior.getActor())
-				&&this.target.equals(simpleBehavior.getTarget())
+				&&(this.target.equals(simpleBehavior.getTarget())||(this.target==null&&simpleBehavior.getTarget()==null))
 				&&this.eventType.equals(simpleBehavior.getEventType())){
 			return true;
 		}
