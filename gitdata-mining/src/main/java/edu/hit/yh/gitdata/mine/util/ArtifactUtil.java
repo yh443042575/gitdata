@@ -1,6 +1,7 @@
 package edu.hit.yh.gitdata.mine.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.hibernate.Session;
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
+import edu.hit.yh.gitdata.mine.module.SimpleBehaviorComparator;
 
 /**
  * 用来从数据库中获取某个repo下面的某个artifact类型的所有行为,准备挖掘使用
@@ -78,13 +80,11 @@ public class ArtifactUtil {
 				System.out.println("有空值");
 			}
 			issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
-			System.out.println("测试1:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
 		}
 		
 		
 		//取得跟issuesCommentEvent有关的评论行为
-		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' order by artifactId").list();
-		System.out.println("测试1:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
+		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' and artifactId like '%issues%' order by artifactId").list();
 		//handle IssueComment
 		if(issueCommentEventList!=null&&issueCommentEventList.size()>0){
 			
@@ -115,14 +115,17 @@ public class ArtifactUtil {
 			
 			simpleBehavior.setEventType("issueComment");
 			issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
-			System.out.println("测试2:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
 
-		}
+			}
 		}
 		for(String key:issueArtifactsMap.keySet()){
 			issueArtifacts.add(issueArtifactsMap.get(key));
+			
 		}
-		System.out.println("测试:"+issueArtifactsMap.get("https://github.com/jquery/jquery/issues/1674").getBehaviorSeq().size());
+		for(Artifact<SimpleBehavior> a:issueArtifacts){
+			Collections.sort(a.getBehaviorSeq(),new SimpleBehaviorComparator());
+		}
+		
 		return issueArtifacts;
 	}
  
