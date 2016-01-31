@@ -80,6 +80,7 @@ public class SimpleGspMiningAlgorithm extends
 			
 		}
 		resultBehaviorPatterns.forEach(System.out::println);
+		
 	}
 	
 	
@@ -251,7 +252,7 @@ public class SimpleGspMiningAlgorithm extends
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(2);
 		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
-		simpleGspMiningAlgorithm.setSurpport(2);
+		simpleGspMiningAlgorithm.setSurpport(10);
 		simpleGspMiningAlgorithm.execute(null);
 	}
 

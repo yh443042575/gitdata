@@ -44,6 +44,4 @@ public abstract class AbstractGspMiningAlgorithm<P> {
 	public abstract  List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist, Object artifacts);
 
 
-	
-
 }
