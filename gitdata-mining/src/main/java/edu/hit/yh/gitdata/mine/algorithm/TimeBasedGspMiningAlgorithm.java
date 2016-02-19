@@ -1,11 +1,17 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
+import edu.hit.yh.gitdata.mine.module.TimeBasedBehavior;
+import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
+import edu.hit.yh.gitdata.mine.util.RelativeTimeUtil;
 
 
 /**
@@ -50,28 +56,203 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 		 * 4、对第二个序列进行1的操作
 		 */
 		while(!algorithmEndFlag){
-			
+			if(nowLength == 1){//扫描全artifactList来建立数据
+				for(int i = 0; i<artifactList.size();i++){
+					List<SimpleBehavior> behaviorSeq = artifactList.get(i).getBehaviorSeq();
+					for(int j = 0;j<behaviorSeq.size();j++){
+						SimpleBehavior simpleBehavior = behaviorSeq.get(j);
+						if(!addBehaviorPatternCount(simpleBehavior, preBehaviorPatterns)){//如果该行为没有被add过则将该行为的初始相对时间置为null
+							BehaviorPattern<TimeBasedBehavior> behaviorPattern = new BehaviorPattern<TimeBasedBehavior>() ;							
+							behaviorPattern.setBehaviorList(new ArrayList<TimeBasedBehavior>());
+							TimeBasedBehavior t = new TimeBasedBehavior();
+							t.setActor(simpleBehavior.getActor());
+							t.setAction(simpleBehavior.getAction());
+							t.setCreatedAt(simpleBehavior.getCreatedAt());
+							t.setEventType(simpleBehavior.getEventType());
+							t.setTarget(simpleBehavior.getTarget());
+							t.setRelativeTime("null");
+							behaviorPattern.getBehaviorList().add(t);
+							behaviorPattern.addSurpport();
+						}
+					}
+				}
+				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
+			}else{
+				List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(preBehaviorPatterns);
+				resultBehaviorPatterns.addAll(tempList);
+				preBehaviorPatterns = new ArrayList<BehaviorPattern>();
+				preBehaviorPatterns = this.joinOperation(tempList);
+				preBehaviorPatterns = this.pruning(preBehaviorPatterns, artifactList);
+				if(preBehaviorPatterns.size()==0){//如果找不到候选序列，说明算法结束
+					algorithmEndFlag = true;
+				}
+				
+			}
+			nowLength++;
+			System.out.println(preBehaviorPatterns.size());
 		}
-		
-		
-		
+		resultBehaviorPatterns.forEach(System.out::println);
+	}
+	
+	
+	/**
+	 * 判断当前的behavior在不在list中（已完成————未测试）
+	 * 扫描当前的preBehaviorPatterns，如果存在，则计数+1，返回true
+	 * 如果不在preBehaviorPatterns，则直接返回true
+	 * @param simpleBehavior
+	 * @param preBehaviorPatterns
+	 * @return
+	 */
+	private boolean addBehaviorPatternCount(SimpleBehavior simpleBehavior,
+			List<BehaviorPattern> preBehaviorPatterns) {
+		for(BehaviorPattern behaviorPattern:preBehaviorPatterns){
+			List<SimpleBehavior> list = behaviorPattern.getBehaviorList();
+			if(simpleBehavior.equals(list.get(0))){
+				behaviorPattern.addSurpport();
+				return true;
+			}
+		}
+		return false;
 	}
 
+
+	/**
+	 * 扫描数据库，得到我们在计数阶段所需要的artifactList
+	 */
 	@Override
-	public <T> List<Artifact<T>> buildArtifacts(String repo, String ArtifactType) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Artifact<SimpleBehavior>> buildArtifacts(String repo, String ArtifactType) {
+		List<Artifact<SimpleBehavior>> artifactList = null;
+		Class clazz = ArtifactUtil.class;
+		Method method = null;
+		try {
+			method = clazz.getMethod("get" + ArtifactType + "SimpleBehavior",
+					String.class);
+			artifactList = (List<Artifact<SimpleBehavior>>)method.invoke(clazz.newInstance(), repo);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+
+		return artifactList;
 	}
 
+	/**
+	 * 对当前的候选集做连接操作
+	 * @param patternlist
+	 * @return
+	 */
 	@Override
 	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
-		// TODO Auto-generated method stub
+		List<BehaviorPattern>  tempList = new ArrayList<BehaviorPattern>();
+		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
+		Collections.copy(tempList, patternlist);
+		for(BehaviorPattern behaviorPattern1:tempList){
+			for(BehaviorPattern behaviorPattern2 : patternlist){
+				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)){
+					List<TimeBasedBehavior> timeBasedBehaviorList1 = behaviorPattern1.getBehaviorList();
+					List<TimeBasedBehavior> timeBasedBehaviorList2 = behaviorPattern2.getBehaviorList();
+					List<TimeBasedBehavior> joinList =  new ArrayList<TimeBasedBehavior>(timeBasedBehaviorList1);
+					Collections.copy(joinList, timeBasedBehaviorList1);
+					joinList.add(timeBasedBehaviorList2.get(timeBasedBehaviorList2.size()-1));
+					List<TimeBasedBehavior> timeBasedBehaviorList3 = joinList;
+				}
+			}
+		}
 		return null;
 	}
 
+	
+	/**
+	 * 判断两个pattern能不能一起join（已完成——未测试）
+	 * @param behaviorPattern1
+	 * @param behaviorPattern2
+	 * @return
+	 */
+	private boolean isAbleToJoin(BehaviorPattern behaviorPattern1, BehaviorPattern behaviorPattern2) {
+		List<TimeBasedBehavior> timeBasedBehaviorList1 =  behaviorPattern1.getBehaviorList();
+		List<TimeBasedBehavior> timeBasedBehaviorList2 =  behaviorPattern2.getBehaviorList();
+		
+		if(timeBasedBehaviorList1.size()==1){
+			if(timeBasedBehaviorList1.get(0).equals(timeBasedBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
+					timeBasedBehaviorList1.get(0).getCreatedAt().equals(
+							timeBasedBehaviorList2.get(0).getCreatedAt())){
+				return false;
+			}else{
+				return true;
+			}
+		}
+		
+		for(int i=1;i<timeBasedBehaviorList1.size();i++){
+			if(!timeBasedBehaviorList1.get(i).equals(timeBasedBehaviorList2.get(i-1))){
+				return false;
+			}
+		}
+		return true;
+	}
+		
+	
+	/**
+	 * 对当前得到的候选序列进行剪枝，在计数过程中，先把握住行为是否匹配，然后与上一个行为计算相对时间，相对时间匹配的才能
+	 */
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,
 			Object artifacts) {
+		//算法所能容忍的最小支持度
+		int surpport = this.getSurpport();
+		//算法运行时所需要的原始数据
+		List<Artifact<SimpleBehavior>> artifactList = (List<Artifact<SimpleBehavior>>)artifacts;
+		//经过剪枝之后所得到的最后的结果，作为下次运算的候选序列
+		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
+		
+		/**
+		 * 一个m*n的时间复杂度的算法，利用基于时间的
+		 */
+		for(BehaviorPattern<TimeBasedBehavior> preBehaviorPattern :patternlist){
+			for(Artifact<SimpleBehavior> artifact:artifactList){
+				
+				int artPoint = 0;
+				List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
+				/**
+				 * preSimpleBehavior是待检验的行为序列，
+				 * behaviorSeq是artifact中包含的序列
+				 */
+				for(TimeBasedBehavior preTimeBehavior:preBehaviorPattern.getBehaviorList()){
+					int num = preBehaviorPattern.getBehaviorList().indexOf(preTimeBehavior);
+					int lastPoint = 0;
+					
+					//如果还有搜索下去的必要
+					if((artBehaviorSeq.size()-artPoint)>=(preBehaviorPattern.getBehaviorList().size()-num)){
+						for(;artPoint<artBehaviorSeq.size();artPoint++){
+							//这里是验证在当前的artifact中，有没有行为和相对时间都与当前需要验证的行为相符的
+							if(preTimeBehavior.simplEquals(artBehaviorSeq.get(artPoint))){//如果在行为上与前者基本一致
+								String preRelativeTime = preTimeBehavior.getRelativeTime();
+								if(num!=0){//如果验证的是候选行为不是第一个，则需要计算artifact的相对时间，只要行为对上就可以
+									String artifactRealtiveTime = RelativeTimeUtil.calculateRelativeTime(artBehaviorSeq.get(lastPoint).getCreatedAt(), artBehaviorSeq.get(artPoint).getCreatedAt());
+									if(artifactRealtiveTime.equals(preRelativeTime)){//如果基本行为对的上，相对时间也能够对上
+										
+									}
+								}
+								if(num!=preBehaviorPattern.getBehaviorList().size()-1){//如果还没有检查完当前behaviorPattern则继续
+									break;
+								}else{//如果扫描成功，则当前的behaviorPattern支持度+1
+									preBehaviorPattern.addSurpport();
+									lastPoint = artPoint;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}

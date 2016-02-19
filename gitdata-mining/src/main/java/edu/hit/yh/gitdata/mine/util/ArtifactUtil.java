@@ -118,8 +118,25 @@ public class ArtifactUtil {
 
 			}
 		}
+		
+		/**
+		 * 这里将整理出的原始artifact做一些操作，以便后来提升算法运行的速度
+		 */
 		for(String key:issueArtifactsMap.keySet()){
-			issueArtifacts.add(issueArtifactsMap.get(key));
+			
+			Artifact artifact = issueArtifactsMap.get(key);
+			/**
+			 * 这里把每个artifact中的动作参与者都添加到一个list中，后面算法扫描的时候，先看待验证的行为模式中的协作者
+			 * 是否完全被包含于当前的artifact中，如果完全包含，则进行下一步的验证
+			 */
+			
+			List<SimpleBehavior> behaviorSeq = (List<SimpleBehavior>)artifact.getBehaviorSeq();
+			List<String> actors = new ArrayList<String>();
+			for(SimpleBehavior s:behaviorSeq){
+				actors.add(s.getActor());
+			}
+			artifact.setActors(actors);
+			issueArtifacts.add(artifact);
 			
 		}
 		for(Artifact<SimpleBehavior> a:issueArtifacts){
@@ -153,11 +170,5 @@ public class ArtifactUtil {
 		
 		return null;
 	}
-	
-	
-	
-	
-	
-	
 	
 }

@@ -76,7 +76,6 @@ public class SimpleGspMiningAlgorithm extends
 				}
 			}
 			nowLength++;
-			System.out.println(preBehaviorPatterns.size());
 			
 		}
 		resultBehaviorPatterns.forEach(System.out::println);
@@ -167,7 +166,7 @@ public class SimpleGspMiningAlgorithm extends
 		System.out.println("进行连接操作...");
 		for(BehaviorPattern behaviorPattern1:tempList){
 			for(BehaviorPattern behaviorPattern2:patternlist){
-				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1,behaviorPattern2)){//如果两个行为模式是可以join的
+				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1, behaviorPattern2)){//如果两个行为模式是可以join的
 					List<SimpleBehavior> simpleBehaviorList1 =  behaviorPattern1.getBehaviorList();
 					List<SimpleBehavior> simpleBehaviorList2 =  behaviorPattern2.getBehaviorList();
 					List<SimpleBehavior> joinList = new ArrayList<SimpleBehavior>(simpleBehaviorList1);

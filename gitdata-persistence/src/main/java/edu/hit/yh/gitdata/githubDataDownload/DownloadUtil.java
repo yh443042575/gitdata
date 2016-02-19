@@ -13,7 +13,6 @@ import org.htmlparser.util.SimpleNodeIterator;
  */
 public class DownloadUtil {
 
-	
 	/**
 	 * 迭代方式找到某个node下的满足我们需要的条件的子node
 	 * @param root

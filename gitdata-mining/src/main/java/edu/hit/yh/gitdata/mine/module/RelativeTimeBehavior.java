@@ -18,5 +18,8 @@ public class RelativeTimeBehavior {
 	
 	//动作发起时间
 	private Date createAt;
+	
+	//该动作与上一个动作之间相差的相对时间
+	private String relativeTime;
 
 }
