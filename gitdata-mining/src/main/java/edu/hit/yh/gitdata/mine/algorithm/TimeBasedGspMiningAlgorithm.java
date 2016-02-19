@@ -210,52 +210,89 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 		int surpport = this.getSurpport();
 		//算法运行时所需要的原始数据
 		List<Artifact<SimpleBehavior>> artifactList = (List<Artifact<SimpleBehavior>>)artifacts;
-		//经过剪枝之后所得到的最后的结果，作为下次运算的候选序列
-		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
-		
 		/**
 		 * 一个m*n的时间复杂度的算法，利用基于时间的
 		 */
 		for(BehaviorPattern<TimeBasedBehavior> preBehaviorPattern :patternlist){
 			for(Artifact<SimpleBehavior> artifact:artifactList){
-				
-				int artPoint = 0;
-				List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
-				/**
-				 * preSimpleBehavior是待检验的行为序列，
-				 * behaviorSeq是artifact中包含的序列
-				 */
-				for(TimeBasedBehavior preTimeBehavior:preBehaviorPattern.getBehaviorList()){
-					int num = preBehaviorPattern.getBehaviorList().indexOf(preTimeBehavior);
-					int lastPoint = 0;
-					
-					//如果还有搜索下去的必要
-					if((artBehaviorSeq.size()-artPoint)>=(preBehaviorPattern.getBehaviorList().size()-num)){
-						for(;artPoint<artBehaviorSeq.size();artPoint++){
-							//这里是验证在当前的artifact中，有没有行为和相对时间都与当前需要验证的行为相符的
-							if(preTimeBehavior.simplEquals(artBehaviorSeq.get(artPoint))){//如果在行为上与前者基本一致
-								String preRelativeTime = preTimeBehavior.getRelativeTime();
-								if(num!=0){//如果验证的是候选行为不是第一个，则需要计算artifact的相对时间，只要行为对上就可以
-									String artifactRealtiveTime = RelativeTimeUtil.calculateRelativeTime(artBehaviorSeq.get(lastPoint).getCreatedAt(), artBehaviorSeq.get(artPoint).getCreatedAt());
-									if(artifactRealtiveTime.equals(preRelativeTime)){//如果基本行为对的上，相对时间也能够对上
-										
+				if(isNeedToCheck(preBehaviorPattern,artifact)){//如果有检查的必要
+					int artPoint = 0;
+					List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
+					List<Integer> resultIndexList = new ArrayList<Integer>();
+					boolean flag = true;
+					/**
+					 * preSimpleBehavior是待检验的行为序列，
+					 * behaviorSeq是artifact中包含的序列
+					 */
+					for(int preNum = 0; preNum<preBehaviorPattern.getBehaviorList().size()-1;preNum++){
+						TimeBasedBehavior preTimeBehavior = preBehaviorPattern.getBehaviorList().get(preNum);
+						//如果还有搜索下去的必要
+						if(((artBehaviorSeq.size()-artPoint)>=(preBehaviorPattern.getBehaviorList().size()-preNum))&&flag){
+							for(;artPoint<artBehaviorSeq.size();artPoint++){
+								//这里是验证在当前的artifact中，有没有行为和相对时间都与当前需要验证的行为相符的
+								if(preTimeBehavior.simplEquals(artBehaviorSeq.get(artPoint))){//如果在行为上与前者基本一致
+									String preRelativeTime = preTimeBehavior.getRelativeTime();
+									if(preNum!=0){//如果验证的是候选行为不是第一个，则需要计算artifact的相对时间，只要行为对上就可以
+										int artlastPoint = resultIndexList.get(resultIndexList.size()-1);
+										String artifactRealtiveTime = RelativeTimeUtil.calculateRelativeTime(artBehaviorSeq.get(artlastPoint).getCreatedAt(), artBehaviorSeq.get(artPoint).getCreatedAt());
+										if(!artifactRealtiveTime.equals(preRelativeTime)){//如果基本行为对不上
+											/**
+											 * 如果当前没有找到符合preBehaviorPattern的序列，则将preNum-1,然后将artPoint置为artlastPoint+1的位置
+											 */
+											if(artPoint==artBehaviorSeq.size()-1)
+												preNum -=1;
+												if(preNum==-1){//如果preNum已经不能再减了，说明这个artifact里着实找不到序列了
+													flag = false;
+													break;
+												}
+												artPoint = resultIndexList.get(resultIndexList.size()-1)+1;
+											continue;
+										}
 									}
-								}
-								if(num!=preBehaviorPattern.getBehaviorList().size()-1){//如果还没有检查完当前behaviorPattern则继续
-									break;
-								}else{//如果扫描成功，则当前的behaviorPattern支持度+1
-									preBehaviorPattern.addSurpport();
-									lastPoint = artPoint;
+									//到这里是已经找到了相对应的行为了
+									if(preNum!=preBehaviorPattern.getBehaviorList().size()-1){//如果还没有检查完当前behaviorPattern则继续
+										resultIndexList.add(artPoint);
+										break;
+									}else{//如果扫描成功，则当前的behaviorPattern支持度+1
+										preBehaviorPattern.addSurpport();
+										break;
+									}
 								}
 							}
 						}
 					}
+				}else {
+					
 				}
 			}
 		}
-		// TODO Auto-generated method stub
-		return null;
+		List<BehaviorPattern> list =  new ArrayList<BehaviorPattern>();
+		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){
+			if(behaviorPattern.getSurpport()>=this.getSurpport()){
+				list.add(behaviorPattern);
+			}
+		}
+		return 	list;
 	}
 
-	
+	/**
+	 * 检测某个behaviorPattern是否有必要在该artifact中检查
+	 * @return
+	 */
+	private boolean isNeedToCheck(BehaviorPattern<TimeBasedBehavior> preBehaviorPattern,Artifact<SimpleBehavior> artifact) {
+
+		List<TimeBasedBehavior> preBehaviorList = preBehaviorPattern.getBehaviorList();
+		List<SimpleBehavior> artBehaviorList = artifact.getBehaviorSeq();
+		
+		if(preBehaviorList.size()>artBehaviorList.size()){//如果检验的行为模式比artifact的长度还要大，那就停止检验
+			return false;
+		}
+		for(TimeBasedBehavior t:preBehaviorList){
+			if(!artifact.getActors().contains(t.getActor())){
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
