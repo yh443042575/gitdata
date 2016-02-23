@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.spi.DirStateFactory.Result;
 
@@ -64,6 +65,7 @@ public class AbstractActorGspMiningAlgorithm extends
 		while(!algorithmEndFlag){//如果候选的序列中还有可以连接的项，则继续进行算法
 			if(nowLength==1){//如果是第一次来扫描全表的话，因为BehaviorPatternList没有数据,这时需要扫描全ArtifactList
 				for(int i = 0;i<artifactList.size();i++){//对Artifact中的每一个behaviorSeq
+					System.out.println(i);
 					List<SimpleBehavior> behaviorSeq = artifactList.get(i).getBehaviorSeq();
 					for(int j = 0;j<behaviorSeq.size();j++){
 						if(!addBehaviorPatternCount(behaviorSeq.get(j),preBehaviorPatterns)){//判断当前的行为是否已经统计过
@@ -90,8 +92,12 @@ public class AbstractActorGspMiningAlgorithm extends
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
-					List<BehaviorPattern> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
-					
+					HashMap<String, Integer> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
+					for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
+						if(entry.getValue()>getSurpport()){
+							System.out.println(entry.getKey());
+						} 
+					}
 				}
 			}
 			nowLength++;
@@ -111,7 +117,7 @@ public class AbstractActorGspMiningAlgorithm extends
 			List<BehaviorPattern> preBehaviorPatterns) {
 		for(BehaviorPattern behaviorPattern:preBehaviorPatterns){
 			List<AbstractActorBehavior> list = behaviorPattern.getBehaviorList();
-			if(simpleBehavior.equals(list.get(0))){
+			if(list.get(0).equals(simpleBehavior)){
 				behaviorPattern.addSurpport();
 				return true;
 			}
@@ -137,15 +143,16 @@ public class AbstractActorGspMiningAlgorithm extends
 		for(BehaviorPattern<AbstractActorBehavior> behaviorPattern:patternlist){//待验证的每一个patternList
 			for(Artifact<SimpleBehavior> artifact:artifactList){//验证的总artifact集合
 				int point = 0;
+				int num = 0;
 				List<SimpleBehavior> behaviorSeq = artifact.getBehaviorSeq();
 				for(AbstractActorBehavior preSimpleBehavior:behaviorPattern.getBehaviorList()){
-					int num = behaviorPattern.getBehaviorList().indexOf(preSimpleBehavior);
 					//如果还有搜索下去的必要
 					if((behaviorSeq.size()-point)>=
 							(behaviorPattern.getBehaviorList().size()-num)){
 						for(;point<behaviorSeq.size();point++){
 							if(preSimpleBehavior.equals(behaviorSeq.get(point))){
 								if(num!=behaviorPattern.getBehaviorList().size()-1){//如果还没有检查完当前behaviorPattern则继续
+									num++;
 									break;
 								}else{//如果扫描成功，则当前的behaviorPattern支持度+1
 									behaviorPattern.addSurpport();
@@ -275,9 +282,10 @@ public class AbstractActorGspMiningAlgorithm extends
 	 * @param artifacts
 	 * @return
 	 */
-	private List<BehaviorPattern>  findAbstractActorBehaviorPatterns(List<BehaviorPattern> patternList,List<Artifact<SimpleBehavior>> artifacts){
+	private HashMap<String, Integer>  findAbstractActorBehaviorPatterns(List<BehaviorPattern> patternList,List<Artifact<SimpleBehavior>> artifacts){
 		
 		List<BehaviorPattern> abstractActorResultList = new ArrayList<BehaviorPattern>();
+		HashMap<String, Integer> abstractActorResultMap = new HashMap<String, Integer>();
 		
 		for(BehaviorPattern<AbstractActorBehavior> aab:patternList){
 			for(Artifact<SimpleBehavior> artifact:artifacts){
@@ -316,12 +324,26 @@ public class AbstractActorGspMiningAlgorithm extends
 							a.setEventType(sb.getEventType());
 							a.setAction(sb.getAction());
 						}
-						
+						//将转换过来的模式变成字符串，存储在map中，用于后期的计数
+						StringBuilder pattern = new StringBuilder();
+						for(AbstractActorBehavior a:aablist){
+							pattern.append(a.getActor()+" ");
+							pattern.append(a.getEventType()+" "+a.getAction()+" ");
+							Collections.sort(a.getTarget());
+							for(Integer i:a.getTarget()){
+								pattern.append(i+" ");
+							}
+						}
+						//如果在结果Map中找到了匹配的模式，则将其支持度+1
+						if(abstractActorResultMap.containsKey(pattern.toString())){
+							int i = abstractActorResultMap.get(pattern.toString());
+							abstractActorResultMap.replace(pattern.toString(), i+1);
+						}
 					}
 				}
 			}
 		}
-		return null;
+		return abstractActorResultMap;
 	}
 	/**
 	 * 给定一个纯操作的模式和artifact，找到artifact中符合BehaviorPattern的解空间
@@ -338,10 +360,9 @@ public class AbstractActorGspMiningAlgorithm extends
 		List<AbstractActorBehavior> aabBehaviorSeq = aab.getBehaviorList();
 		List<List<Integer>> resultList = new ArrayList<List<Integer>>();
 		
-		
 		//用来计数用的list	
 		List<Integer> culculateList = new ArrayList<Integer>(aab.getBehaviorList().size());
-		culculateList.set(0, 0);
+		culculateList.add(0);
 		int cPoint = 0;
 		boolean endflag = false;
 		
@@ -357,18 +378,31 @@ public class AbstractActorGspMiningAlgorithm extends
 						resultList.add(result);
 						cPoint--;
 					}else{
+						System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
+						culculateList.add(0);
 						culculateList.set(cPoint, i+1);
 					}
 				}
 			}
 			cPoint--;
-			culculateList.set(cPoint, culculateList.get(cPoint)+1);
 			if(cPoint == -1){
 				endflag = true;
+			}else {
+				culculateList.set(cPoint, culculateList.get(cPoint)+1);
 			}
 		}
 		
 		return resultList;
 	}
+	
+	public static void main(String args[]){
+		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(10);
+		abstractActorGspMiningAlgorithm.setArtifactType("Issue");
+		abstractActorGspMiningAlgorithm.setRepo("jquery/jquery/");
+		abstractActorGspMiningAlgorithm.execute(null);
+	}
+	
+	
+	
 	
 }

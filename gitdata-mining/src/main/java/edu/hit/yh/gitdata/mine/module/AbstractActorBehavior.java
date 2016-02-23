@@ -35,8 +35,7 @@ public class AbstractActorBehavior {
 				return false;
 			}
 			SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
-			if(this.eventType.equals(simpleBehavior.getEventType())
-					&&this.action.equals(simpleBehavior.getAction())){
+			if(this.eventType.equals(simpleBehavior.getEventType())){
 				return true;
 			}
 			return false;

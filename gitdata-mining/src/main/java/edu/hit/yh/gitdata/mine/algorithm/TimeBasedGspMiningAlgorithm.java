@@ -294,5 +294,4 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 		}
 		return true;
 	}
-
 }

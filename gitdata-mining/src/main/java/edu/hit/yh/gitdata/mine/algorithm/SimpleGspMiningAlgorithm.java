@@ -254,7 +254,5 @@ public class SimpleGspMiningAlgorithm extends
 		simpleGspMiningAlgorithm.setSurpport(10);
 		simpleGspMiningAlgorithm.execute(null);
 	}
-
 	
-
 }

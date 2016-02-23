@@ -173,13 +173,15 @@ public class IssueDataFromHtml {
 				IssuesEvent issuesEvent = new IssuesEvent();
 				issuesEvent.setIssueAction("close");
 				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
-				issuesEvent.setActor(actorNode.toPlainTextString());
+				issuesEvent.setActor(actorNode==null?"null":actorNode.toPlainTextString());
 				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
+				if(timeNode!=null){
 				Pattern pattern = Pattern.compile("datetime=\".*\"");
 				Matcher matcher = pattern.matcher(timeNode.getText());
 				if(matcher.find()){
 					String time = matcher.group().split("\"")[1];
 					issuesEvent.setCreatedAt(time);
+				}
 				}
 				iList.add(issuesEvent);
 				
@@ -538,10 +540,10 @@ public class IssueDataFromHtml {
 		}
 		List<IssueCommentEvent> icList = new ArrayList<IssueCommentEvent>();
 		List<IssuesEvent> iList = new ArrayList<IssuesEvent>();
+		icList = this.processComment(nodeList,icList);
 		iList = this.processOpenIssue(nodeList,iList);
 		iList = this.processCloseIssue(nodeList, iList);
 		iList = this.processReopenIssue(nodeList, iList);
-		icList = this.processComment(nodeList,icList);
 		iList = this.processLabled(nodeList, iList);
 		iList = this.processUnLabled(nodeList, iList);
 		iList = this.processReference(nodeList, iList);
@@ -594,12 +596,12 @@ public class IssueDataFromHtml {
 	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
-		issueDataFromHtml.setRepo("jquery/jquery/");
+		issueDataFromHtml.setRepo("golang/go/");
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		issueDataFromHtml.setSession(session);
-		for(int i=1669;i<=2700;i++){
+		for(int i=1;i<=14463;i++){
 			try {
-				String url = "https://github.com/jquery/jquery/issues/"+String.valueOf(i);
+				String url = "https://github.com/golang/go/issues/"+String.valueOf(i);
 				System.out.println("解析第"+i+"个");
 				issueDataFromHtml.getDataFromIssueUrl(url);
 			} catch (Exception e) {
