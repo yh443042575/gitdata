@@ -24,6 +24,7 @@ import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
  * 编码具体方式为：由1->n，按照参与人的先后出现次序进行编码
  * 3、对这些被抽象出来的模式进行统计，得到基于抽象用户的行为模式
  * 
+ * 算法未完成，链接部分有待改善
  * @author DHAO
  *
  */
