@@ -596,12 +596,12 @@ public class IssueDataFromHtml {
 	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
-		issueDataFromHtml.setRepo("golang/go/");
+		issueDataFromHtml.setRepo("docker/docker/");
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		issueDataFromHtml.setSession(session);
-		for(int i=1;i<=14463;i++){
+		for(int i=7976;i<=20755;i++){
 			try {
-				String url = "https://github.com/golang/go/issues/"+String.valueOf(i);
+				String url = "https://github.com/docker/docker/issues/"+String.valueOf(i);
 				System.out.println("解析第"+i+"个");
 				issueDataFromHtml.getDataFromIssueUrl(url);
 			} catch (Exception e) {

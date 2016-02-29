@@ -125,7 +125,6 @@ public class AbstractActorGspMiningAlgorithm extends
 		}
 		return false;
 	}
-	
 	/**
 	 * 对当前的候选patternlist进行剪枝操作（已完成————未测试）
 	 * 统计当前的patternlist中每一个behaviorPattern的支持度，不满足最小支持度的全都放弃
