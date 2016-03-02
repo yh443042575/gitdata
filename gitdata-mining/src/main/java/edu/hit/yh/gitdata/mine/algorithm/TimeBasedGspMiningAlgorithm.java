@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.hit.yh.gitdata.mine.module.AbstractActorBehavior;
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
@@ -64,6 +65,7 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 						if(!addBehaviorPatternCount(simpleBehavior, preBehaviorPatterns)){//如果该行为没有被add过则将该行为的初始相对时间置为null
 							BehaviorPattern<TimeBasedBehavior> behaviorPattern = new BehaviorPattern<TimeBasedBehavior>() ;							
 							behaviorPattern.setBehaviorList(new ArrayList<TimeBasedBehavior>());
+							preBehaviorPatterns.add(behaviorPattern);
 							TimeBasedBehavior t = new TimeBasedBehavior();
 							t.setActor(simpleBehavior.getActor());
 							t.setAction(simpleBehavior.getAction());
@@ -86,10 +88,10 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列，说明算法结束
 					algorithmEndFlag = true;
 				}
-				
 			}
 			nowLength++;
 			System.out.println(preBehaviorPatterns.size());
+			System.out.println(nowLength);
 		}
 		resultBehaviorPatterns.forEach(System.out::println);
 	}
@@ -106,8 +108,8 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 	private boolean addBehaviorPatternCount(SimpleBehavior simpleBehavior,
 			List<BehaviorPattern> preBehaviorPatterns) {
 		for(BehaviorPattern behaviorPattern:preBehaviorPatterns){
-			List<SimpleBehavior> list = behaviorPattern.getBehaviorList();
-			if(simpleBehavior.equals(list.get(0))){
+			List<TimeBasedBehavior> list = behaviorPattern.getBehaviorList();
+			if(list.get(0).simplEquals(simpleBehavior)){
 				behaviorPattern.addSurpport();
 				return true;
 			}
@@ -150,24 +152,30 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 	 * @param patternlist
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
-		List<BehaviorPattern>  tempList = new ArrayList<BehaviorPattern>();
+		List<BehaviorPattern>  tempList = new ArrayList<BehaviorPattern>(patternlist);
 		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
 		Collections.copy(tempList, patternlist);
 		for(BehaviorPattern behaviorPattern1:tempList){
 			for(BehaviorPattern behaviorPattern2 : patternlist){
-				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)){
+				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1, behaviorPattern2)){
 					List<TimeBasedBehavior> timeBasedBehaviorList1 = behaviorPattern1.getBehaviorList();
 					List<TimeBasedBehavior> timeBasedBehaviorList2 = behaviorPattern2.getBehaviorList();
 					List<TimeBasedBehavior> joinList =  new ArrayList<TimeBasedBehavior>(timeBasedBehaviorList1);
 					Collections.copy(joinList, timeBasedBehaviorList1);
 					joinList.add(timeBasedBehaviorList2.get(timeBasedBehaviorList2.size()-1));
 					List<TimeBasedBehavior> timeBasedBehaviorList3 = joinList;
+					BehaviorPattern behaviorPattern = new BehaviorPattern<AbstractActorBehavior>();
+					behaviorPattern.setBehaviorList(timeBasedBehaviorList3);
+					behaviorPattern.setSurpport(0);
+					resultList.add(behaviorPattern);
+					System.out.println("成功添加pattern"+behaviorPattern);
 				}
 			}
 		}
-		return null;
+		return resultList;
 	}
 
 	
@@ -209,10 +217,18 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 		//算法所能容忍的最小支持度
 		int surpport = this.getSurpport();
 		//算法运行时所需要的原始数据
+		@SuppressWarnings("unchecked")
 		List<Artifact<SimpleBehavior>> artifactList = (List<Artifact<SimpleBehavior>>)artifacts;
 		/**
 		 * 一个m*n的时间复杂度的算法，利用基于时间的
+		 * 
+		 * 这里需要对不同长度的pattern做不同的处理，具体处理内容如下
+		 * 长度为1时，不考虑，
+		 * 长度为2时，在artifactList中寻找其对应的模式得到第二个行为的相对时间
+		 * 长度为3及以上时，在pattern的连接上，忽略第二个pattern的第一个相对时间（或假设为第一个pattern的第二个行为的相对时间），若其余的行为一致，则进行连接
 		 */
+
+		if(patternlist.get(0).getBehaviorList().size()>2){
 		for(BehaviorPattern<TimeBasedBehavior> preBehaviorPattern :patternlist){
 			for(Artifact<SimpleBehavior> artifact:artifactList){
 				if(isNeedToCheck(preBehaviorPattern,artifact)){//如果有检查的必要
@@ -224,7 +240,7 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 					 * preSimpleBehavior是待检验的行为序列，
 					 * behaviorSeq是artifact中包含的序列
 					 */
-					for(int preNum = 0; preNum<preBehaviorPattern.getBehaviorList().size()-1;preNum++){
+					for(int preNum = 0; preNum<preBehaviorPattern.getBehaviorList().size();preNum++){
 						TimeBasedBehavior preTimeBehavior = preBehaviorPattern.getBehaviorList().get(preNum);
 						//如果还有搜索下去的必要
 						if(((artBehaviorSeq.size()-artPoint)>=(preBehaviorPattern.getBehaviorList().size()-preNum))&&flag){
@@ -255,6 +271,7 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 										break;
 									}else{//如果扫描成功，则当前的behaviorPattern支持度+1
 										preBehaviorPattern.addSurpport();
+										System.out.println("扫描成功 pattern 的支持度为"+preBehaviorPattern.getSurpport());
 										break;
 									}
 								}
@@ -266,6 +283,8 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 				}
 			}
 		}
+		
+	}
 		List<BehaviorPattern> list =  new ArrayList<BehaviorPattern>();
 		for(BehaviorPattern<SimpleBehavior> behaviorPattern:patternlist){
 			if(behaviorPattern.getSurpport()>=this.getSurpport()){
@@ -294,4 +313,13 @@ public class TimeBasedGspMiningAlgorithm extends AbstractGspMiningAlgorithm<Beha
 		}
 		return true;
 	}
+	
+	public static void main(String args[]){
+		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(20);
+		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
+		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
+		timeBasedGspMiningAlgorithm.execute(null);
+	}
+	
+	
 }

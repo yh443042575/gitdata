@@ -87,7 +87,9 @@ public class AbstractActorGspMiningAlgorithm extends
 			}else {/*如果不是记录长度为1的行为模式，则要把当前的候选序列存入总的result中，
 					然后做连接操作，then,对得到的新的候选序列进行计数*/
 				List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(preBehaviorPatterns);
-				resultBehaviorPatterns.addAll(tempList);//这里要深拷贝
+				if(nowLength>2){
+					resultBehaviorPatterns.addAll(tempList);//这里要深拷贝
+				}
 				preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 				preBehaviorPatterns = this.joinOperation(tempList);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
@@ -103,7 +105,7 @@ public class AbstractActorGspMiningAlgorithm extends
 			}
 			nowLength++;
 		}
-		resultBehaviorPatterns.forEach(System.out::println);
+		//resultBehaviorPatterns.forEach(System.out::println);
 	}
 	
 	/**
@@ -284,7 +286,6 @@ public class AbstractActorGspMiningAlgorithm extends
 	 */
 	private HashMap<String, Integer>  findAbstractActorBehaviorPatterns(List<BehaviorPattern> patternList,List<Artifact<SimpleBehavior>> artifacts){
 		
-		List<BehaviorPattern> abstractActorResultList = new ArrayList<BehaviorPattern>();
 		HashMap<String, Integer> abstractActorResultMap = new HashMap<String, Integer>();
 		
 		for(BehaviorPattern<AbstractActorBehavior> aab:patternList){
@@ -328,16 +329,19 @@ public class AbstractActorGspMiningAlgorithm extends
 						StringBuilder pattern = new StringBuilder();
 						for(AbstractActorBehavior a:aablist){
 							pattern.append(a.getActor()+" ");
-							pattern.append(a.getEventType()+" "+a.getAction()+" ");
+							pattern.append(a.getEventType()+" ");
 							Collections.sort(a.getTarget());
 							for(Integer i:a.getTarget()){
 								pattern.append(i+" ");
 							}
+							pattern.append("|");
 						}
 						//如果在结果Map中找到了匹配的模式，则将其支持度+1
 						if(abstractActorResultMap.containsKey(pattern.toString())){
 							int i = abstractActorResultMap.get(pattern.toString());
 							abstractActorResultMap.replace(pattern.toString(), i+1);
+						}else {
+							abstractActorResultMap.put(pattern.toString(), 1);
 						}
 					}
 				}
@@ -379,7 +383,12 @@ public class AbstractActorGspMiningAlgorithm extends
 						cPoint--;
 					}else{
 						System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
-						culculateList.add(0);
+						if(culculateList.size()>1000){
+							System.out.println("pause");
+						}
+						if(culculateList.size()<aab.getBehaviorList().size()){
+							culculateList.add(0);
+						}
 						culculateList.set(cPoint, i+1);
 					}
 				}
@@ -396,7 +405,7 @@ public class AbstractActorGspMiningAlgorithm extends
 	}
 	
 	public static void main(String args[]){
-		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(10);
+		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(20);
 		abstractActorGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorGspMiningAlgorithm.execute(null);

@@ -38,7 +38,7 @@ public class TimeBasedBehavior {
 			}
 			TimeBasedBehavior timeBasedBehavior = (TimeBasedBehavior)obj;
 			if(this.actor.equals(timeBasedBehavior.getActor())
-					&&(isSameTarget(this.target, timeBasedBehavior.getTarget()))
+					/*&&(isSameTarget(this.target, timeBasedBehavior.getTarget()))*/
 					&&this.eventType.equals(timeBasedBehavior.getEventType())
 					&&this.relativeTime.equals(timeBasedBehavior.getRelativeTime())){
 				return true;
@@ -57,7 +57,7 @@ public class TimeBasedBehavior {
 			}
 			SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
 			if(this.actor.equals(simpleBehavior.getActor())
-					&&(isSameTarget(this.target, simpleBehavior.getTarget()))
+					/*&&(isSameTarget(this.target, simpleBehavior.getTarget()))*/
 					&&this.eventType.equals(simpleBehavior.getEventType())){
 				return true;
 			}

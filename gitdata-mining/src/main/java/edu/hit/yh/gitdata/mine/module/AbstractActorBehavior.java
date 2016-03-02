@@ -31,13 +31,19 @@ public class AbstractActorBehavior {
 		
 		@Override
 		public boolean equals(Object obj) {
-			if(!(obj instanceof SimpleBehavior)){
-				return false;
+			
+			if(obj instanceof SimpleBehavior){
+				SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
+				if(this.eventType.equals(simpleBehavior.getEventType())){
+					return true;
+				}
+			}else if(obj instanceof AbstractActorBehavior) {
+				AbstractActorBehavior abstractActorBehavior = (AbstractActorBehavior)obj;
+				if(this.eventType.equals(abstractActorBehavior.getEventType())){
+					return true;
+				}
 			}
-			SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
-			if(this.eventType.equals(simpleBehavior.getEventType())){
-				return true;
-			}
+			
 			return false;
 		}
 	
