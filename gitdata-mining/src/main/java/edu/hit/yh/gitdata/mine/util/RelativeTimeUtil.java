@@ -11,7 +11,12 @@ import java.util.Date;
  */
 public class RelativeTimeUtil {
 
-	
+	/**
+	 * 计算两个时间之间的相对时间
+	 * @param time1
+	 * @param time2
+	 * @return
+	 */
 	public static String calculateRelativeTime(String time1,String time2){
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

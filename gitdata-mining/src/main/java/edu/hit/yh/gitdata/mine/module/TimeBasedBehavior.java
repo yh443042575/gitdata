@@ -52,14 +52,21 @@ public class TimeBasedBehavior {
 		 * @return
 		 */
 		public boolean simplEquals(Object obj) {
-			if(!(obj instanceof SimpleBehavior)){
-				return false;
-			}
-			SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
-			if(this.actor.equals(simpleBehavior.getActor())
-					/*&&(isSameTarget(this.target, simpleBehavior.getTarget()))*/
-					&&this.eventType.equals(simpleBehavior.getEventType())){
-				return true;
+			
+			if(obj instanceof SimpleBehavior){
+				SimpleBehavior simpleBehavior = (SimpleBehavior)obj;
+				if(this.actor.equals(simpleBehavior.getActor())
+						/*&&(isSameTarget(this.target, simpleBehavior.getTarget()))*/
+						&&this.eventType.equals(simpleBehavior.getEventType())){
+					return true;
+				}
+			}else if(obj instanceof TimeBasedBehavior) {
+				TimeBasedBehavior timeBasedBehavior = (TimeBasedBehavior)obj;
+				if(this.actor.equals(timeBasedBehavior.getActor())
+						/*&&(isSameTarget(this.target, simpleBehavior.getTarget()))*/
+						&&this.eventType.equals(timeBasedBehavior.getEventType())){
+					return true;
+				}
 			}
 			return false;
 		}
