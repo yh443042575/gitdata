@@ -28,9 +28,12 @@ public class RelativeTimeUtil {
 			Date date2 = sdf.parse(time2);
 			
 			long time = date2.getTime()-date1.getTime();
-			long quotient = time/(86400L);
+			long quotient = time/(86400000L);
 			
-			if(quotient<=1){//1天之内
+						
+			if(quotient<0){//不合法的时间
+				return "unleagle";
+			}else if(quotient<=1){//1天之内
 				return "less than 1";
 			}else if (quotient>1&&quotient<=3) {//1天~1周之间
 				return "between 1 and 3";
