@@ -20,6 +20,8 @@ public class SimpleBehaviorComparator implements Comparator<SimpleBehavior> {
 		String time2= o2.getCreatedAt().replaceAll("[T-Z]", " ");
 
 		try {
+			System.out.println(time1);
+			System.out.println(time2);
 			Date date1 = sdf.parse(time1);
 			Date date2 = sdf.parse(time2);
 			if(date1.equals(date2)){

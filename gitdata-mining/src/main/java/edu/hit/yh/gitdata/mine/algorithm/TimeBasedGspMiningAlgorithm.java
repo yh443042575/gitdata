@@ -165,6 +165,7 @@ public class TimeBasedGspMiningAlgorithm extends
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List<BehaviorPattern> joinOperation(List<BehaviorPattern> patternlist) {
+		System.out.println("进行连接操作");
 		List<BehaviorPattern> tempList = new ArrayList<BehaviorPattern>(
 				patternlist);
 		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
@@ -181,8 +182,16 @@ public class TimeBasedGspMiningAlgorithm extends
 					List<TimeBasedBehavior> joinList = new ArrayList<TimeBasedBehavior>(
 							timeBasedBehaviorList1);
 					Collections.copy(joinList, timeBasedBehaviorList1);
-					joinList.add(timeBasedBehaviorList2
-							.get(timeBasedBehaviorList2.size() - 1));
+					/**
+					 * 重新构造一个TimeBasedBehavior,以防引用被篡改
+					 */
+					TimeBasedBehavior t2 = timeBasedBehaviorList2.get(timeBasedBehaviorList2.size() - 1);
+					TimeBasedBehavior t3 = new TimeBasedBehavior();
+					t3.setActor(new String(t2.getActor()));
+					t3.setEventType(new String(t2.getEventType()));
+					t3.setRelativeTime(new String(t2.getRelativeTime()));
+					t3.setCreatedAt(new String(t2.getCreatedAt()));
+					joinList.add(t3);
 					List<TimeBasedBehavior> timeBasedBehaviorList3 = joinList;
 					BehaviorPattern behaviorPattern = new BehaviorPattern<AbstractActorBehavior>();
 					behaviorPattern.setBehaviorList(timeBasedBehaviorList3);
@@ -225,8 +234,9 @@ public class TimeBasedGspMiningAlgorithm extends
 		 * 如果长度大于1，则遍历pattern进行比较
 		 */
 		for (int i = 1; i < timeBasedBehaviorList1.size(); i++) {
-			if(i==1&&(!(timeBasedBehaviorList2.get(i-1).simplEquals(timeBasedBehaviorList1.get(i)))
-					||RelativeTimeUtil.calculateRelativeTime(timeBasedBehaviorList1.get(i).getCreatedAt(), timeBasedBehaviorList2.get(i-1).getCreatedAt()).equals("unleagle"))){
+			if(i==1){
+				if(!(timeBasedBehaviorList2.get(i-1).simplEquals(timeBasedBehaviorList1.get(i)))
+						/*||RelativeTimeUtil.calculateRelativeTime(timeBasedBehaviorList1.get(i).getCreatedAt(), timeBasedBehaviorList2.get(i-1).getCreatedAt()).equals("unleagle"))*/)
 				return false;
 			}else if (!timeBasedBehaviorList1.get(i).equals(
 					timeBasedBehaviorList2.get(i - 1))) {
@@ -242,6 +252,7 @@ public class TimeBasedGspMiningAlgorithm extends
 	@Override
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,
 			Object artifacts) {
+		System.out.println("进行剪枝操作");
 		if(patternlist.isEmpty()){
 			return patternlist;
 		}
@@ -277,8 +288,14 @@ public class TimeBasedGspMiningAlgorithm extends
 									String r = RelativeTimeUtil.calculateRelativeTime(artBehaviorSeq.get(artNum).getCreatedAt(),simpleBehavior.getCreatedAt());
 									//为第二个没有相对时间的行为赋予上相对时间
 									preTimePatternList.get(preNum).setRelativeTime(r);
+									if(!preTimePatternList.get(0).getRelativeTime().equals("0")){
+										System.out.println("有问题");
+									}
 									StringBuilder patternInfo = new StringBuilder();
-									//构造每一个pattern所具有的唯一key
+									/*
+									 * 构造每一个pattern所具有的唯一key
+									 * 由三个元素组成，actor,行为类型，相对时间
+									 */
 									for(TimeBasedBehavior t:preTimePatternList){
 										patternInfo.append(t.getActor()+" ");
 										patternInfo.append(t.getEventType()+" ");
@@ -314,7 +331,7 @@ public class TimeBasedGspMiningAlgorithm extends
 					if (isNeedToCheck(preBehaviorPattern, artifact)) {// 如果有检查的必要
 						int artPoint = 0;
 						List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
-						//建立与pattern的List长度一样长的resultIndexList，没匹配成功一个行为，则将该行为在artifact中的角标记录下来
+						//建立与pattern的List长度一样长的resultIndexList，每匹配成功一个行为，则将该行为在artifact中的角标记录下来
 						List<Integer> resultIndexList = new ArrayList<Integer>();
 						boolean flag = true;
 						/**
@@ -428,10 +445,11 @@ public class TimeBasedGspMiningAlgorithm extends
 	}
 
 	public static void main(String args[]) {
-		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(5);
+		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(6);
 		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
 		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		timeBasedGspMiningAlgorithm.execute(null);
+		System.out.println("算法结束");
 	}
 
 }
