@@ -101,7 +101,16 @@ public class TimeBasedGspMiningAlgorithm extends
 			nowLength++;
 			System.out.println("nowLength" + nowLength);
 		}
-		resultBehaviorPatterns.forEach(System.out::println);
+		for(BehaviorPattern<TimeBasedBehavior> bp:resultBehaviorPatterns){
+			List<TimeBasedBehavior> sList = bp.getBehaviorList();
+			System.out.print("surpport="+bp.getSurpport()+" ");
+			for(TimeBasedBehavior s :sList){
+				System.out.print(s.getActor()+" "+s.getEventType()+" "+s.getTarget()+" "+s.getRelativeTime()+" |");
+			}
+			System.out.println();
+		}
+		
+		//resultBehaviorPatterns.forEach(System.out::println);
 	}
 
 	/**

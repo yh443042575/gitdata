@@ -78,7 +78,15 @@ public class SimpleGspMiningAlgorithm extends
 			nowLength++;
 			
 		}
-		resultBehaviorPatterns.forEach(System.out::println);
+		for(BehaviorPattern<SimpleBehavior> bp:resultBehaviorPatterns){
+			List<SimpleBehavior> sList = bp.getBehaviorList();
+			System.out.print("surpport="+bp.getSurpport()+" ");
+			for(SimpleBehavior s :sList){
+				System.out.print(s.getActor()+" "+s.getEventType()+" "+s.getTarget()+" |");
+			}
+			System.out.println();
+		}
+		//resultBehaviorPatterns.forEach(System.out::println);
 		
 	}
 	
