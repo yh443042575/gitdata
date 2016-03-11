@@ -257,9 +257,8 @@ public class SimpleGspMiningAlgorithm extends
 	public static void main(String args[]){
 		
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(20);
-		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
+		simpleGspMiningAlgorithm.setRepo("golang/go/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
-		simpleGspMiningAlgorithm.setSurpport(10);
 		simpleGspMiningAlgorithm.execute(null);
 	}
 	

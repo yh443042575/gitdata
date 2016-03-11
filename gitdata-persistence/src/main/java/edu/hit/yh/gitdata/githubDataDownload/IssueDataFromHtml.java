@@ -96,7 +96,7 @@ public class IssueDataFromHtml {
 				Node actorNode = DownloadUtil.getSomeChild(node, "class=\"author\"");
 				i.setActor(actorNode.toPlainTextString());
 				Node contentNode = DownloadUtil.getSomeChild(node, "div class=\"comment-body");
-				i.setCommentBody(contentNode.toPlainTextString());
+				//i.setCommentBody(contentNode.toPlainTextString());
 				Node timeNode = DownloadUtil.getSomeChild(node, "datetime");
 				Pattern pattern = Pattern.compile("datetime=\".*\"");
 				Matcher matcher = pattern.matcher(timeNode.getText());
@@ -132,6 +132,9 @@ public class IssueDataFromHtml {
 				Node anotherAtifactNode = DownloadUtil.getSomeChild(node, "class=\"title-link\"");
 				issuesEvent.setIssueContent(anotherAtifactNode==null?"":anotherAtifactNode.toPlainTextString());
 				Pattern artifactPattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
+			//	Pattern artifactPattern = Pattern.compile("zurb/foundation-sites/[a-zA-Z]+/[a-z[0-9]]+");
+
+				//Pattern milestonePattern = Pattern.compile("zurb/foundation-sites/[a-zA-Z]+/.*+");
 				Matcher artifactMatcher = artifactPattern.matcher(anotherAtifactNode==null?"":anotherAtifactNode.getText());
 				if(artifactMatcher.find()){
 					String anotherAtifact = artifactMatcher.group();
@@ -392,7 +395,9 @@ public class IssueDataFromHtml {
 				IssuesEvent issuesEvent = new IssuesEvent();
 				issuesEvent.setIssueAction("milestone");
 				Node milestoneNode = DownloadUtil.getSomeChild(node, "class=\"discussion-item-entity\"");
+				//Pattern milestonePattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/.*+");
 				Pattern milestonePattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/.*+");
+				//Pattern milestonePattern = Pattern.compile("zurb/foundation-sites/[a-zA-Z]+/.*+");
 				Matcher milestoneMatcher = milestonePattern.matcher(milestoneNode.getText());
 				if(milestoneMatcher.find()){
 					String milestone = milestoneMatcher.group().split("\"")[0];
@@ -437,6 +442,8 @@ public class IssueDataFromHtml {
 				issuesEvent.setIssueAction("removeMilestone");
 				Node milestoneNode = DownloadUtil.getSomeChild(node, "class=\"discussion-item-entity\"");
 				Pattern milestonePattern = Pattern.compile("[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/.*+");
+			//	Pattern milestonePattern = Pattern.compile("zurb/foundation-sites/[a-zA-Z]+/.*+");
+
 				Matcher milestoneMatcher = milestonePattern.matcher(milestoneNode.getText());
 				if(milestoneMatcher.find()){
 					String milestone = milestoneMatcher.group().split("\"")[0];
@@ -505,7 +512,10 @@ public class IssueDataFromHtml {
 	
 	public String processArtifactId(String nodeList){
 		String artifactId = "";
+		
 		Pattern artifactPattern = Pattern.compile("https://github.com/[a-zA-Z]+/[a-zA-Z]+/[a-zA-Z]+/[a-z[0-9]]+");
+		//Pattern artifactPattern = Pattern.compile("https://github.com/zurb/foundation-sites/[a-zA-Z]+/[a-z[0-9]]+");
+
 		Matcher matcher = artifactPattern.matcher(nodeList);
 		if(matcher.find()){
 			artifactId = matcher.group();
@@ -573,9 +583,6 @@ public class IssueDataFromHtml {
 		 * 向数据库中持久化数据
 		 */
 		session.beginTransaction();
-		for(IssueCommentEvent ic:icList){
-			session.save(ic);
-		}
 		for(IssuesEvent i:iList){
 			session.save(i);
 			if(i.getIssueAction().equals("open")){
@@ -585,6 +592,10 @@ public class IssueDataFromHtml {
 				session.save(artifactOwner);
 			}
 		}
+		for(IssueCommentEvent ic:icList){
+			session.save(ic);
+		}
+		
 		session.getTransaction().commit();
 		
 	}
@@ -596,12 +607,13 @@ public class IssueDataFromHtml {
 	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
-		issueDataFromHtml.setRepo("docker/docker/");
+		issueDataFromHtml.setRepo("DefinitelyTyped/DefinitelyTyped/");
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		issueDataFromHtml.setSession(session);
-		for(int i=7976;i<=20755;i++){
+		//3648
+		for(int i=587;i<=7785;i++){
 			try {
-				String url = "https://github.com/docker/docker/issues/"+String.valueOf(i);
+				String url = "https://github.com/DefinitelyTyped/DefinitelyTyped/issues/"+String.valueOf(i);
 				System.out.println("解析第"+i+"个");
 				issueDataFromHtml.getDataFromIssueUrl(url);
 			} catch (Exception e) {

@@ -15,6 +15,14 @@ public class SimpleBehaviorComparator implements Comparator<SimpleBehavior> {
 	 */
 	@Override
 	public int compare(SimpleBehavior o1, SimpleBehavior o2) {
+		if(o1.getCreatedAt().isEmpty()||o1.getCreatedAt().equals("null")){
+			return 1;
+		}
+		if(o2.getCreatedAt().isEmpty()||o2.getCreatedAt().equals("null")){
+			return -1;
+		}
+		
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String time1= o1.getCreatedAt().replaceAll("[T-Z]", " ");
 		String time2= o2.getCreatedAt().replaceAll("[T-Z]", " ");
