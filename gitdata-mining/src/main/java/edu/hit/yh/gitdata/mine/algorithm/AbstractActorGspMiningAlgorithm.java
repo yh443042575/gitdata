@@ -405,10 +405,14 @@ public class AbstractActorGspMiningAlgorithm extends
 	}
 	
 	public static void main(String args[]){
+		long time1 = System.currentTimeMillis();
+
 		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(20);
 		abstractActorGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorGspMiningAlgorithm.execute(null);
+		System.out.println(System.currentTimeMillis()-time1);
+
 	}
 	
 }

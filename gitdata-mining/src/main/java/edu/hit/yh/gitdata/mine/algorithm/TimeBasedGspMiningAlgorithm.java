@@ -454,11 +454,13 @@ public class TimeBasedGspMiningAlgorithm extends
 	}
 
 	public static void main(String args[]) {
+		long time1 = System.currentTimeMillis();
 		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(6);
 		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
-		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
+		timeBasedGspMiningAlgorithm.setRepo("gogits/gogs/");
 		timeBasedGspMiningAlgorithm.execute(null);
 		System.out.println("算法结束");
+		System.out.println(System.currentTimeMillis()-time1);
 	}
 
 }

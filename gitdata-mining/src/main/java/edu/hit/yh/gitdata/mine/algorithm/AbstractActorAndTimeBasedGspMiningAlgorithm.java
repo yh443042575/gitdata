@@ -407,10 +407,15 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 	}
 	
 	public static void main(String args[]){
-		AbstractActorAndTimeBasedGspMiningAlgorithm abstractActorAndTimeBasedGspMiningAlgorithm = new AbstractActorAndTimeBasedGspMiningAlgorithm(20);
+		long time1 = System.currentTimeMillis();
+
+		AbstractActorAndTimeBasedGspMiningAlgorithm abstractActorAndTimeBasedGspMiningAlgorithm = 
+				new AbstractActorAndTimeBasedGspMiningAlgorithm(20);
 		abstractActorAndTimeBasedGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);
+		System.out.println(System.currentTimeMillis()-time1);
+
 	}
 	
 	

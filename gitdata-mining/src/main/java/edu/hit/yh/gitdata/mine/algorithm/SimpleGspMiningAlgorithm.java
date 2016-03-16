@@ -256,10 +256,12 @@ public class SimpleGspMiningAlgorithm extends
 	
 	public static void main(String args[]){
 		
+		long time1 = System.currentTimeMillis();
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(20);
-		simpleGspMiningAlgorithm.setRepo("golang/go/");
+		simpleGspMiningAlgorithm.setRepo("gogits/gogs/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
+		System.out.println(System.currentTimeMillis()-time1);
 	}
 	
 }
