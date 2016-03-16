@@ -258,7 +258,7 @@ public class SimpleGspMiningAlgorithm extends
 		
 		long time1 = System.currentTimeMillis();
 		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(20);
-		simpleGspMiningAlgorithm.setRepo("gogits/gogs/");
+		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
