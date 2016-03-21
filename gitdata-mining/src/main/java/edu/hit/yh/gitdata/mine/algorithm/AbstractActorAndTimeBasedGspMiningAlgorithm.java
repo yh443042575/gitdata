@@ -1,5 +1,6 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
+import edu.hit.yh.gitdata.mine.util.GraphUtil;
 import edu.hit.yh.gitdata.mine.util.RelativeTimeUtil;
 
 /**
@@ -98,6 +100,13 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 			}
 			nowLength++;
 		}
+		try {
+			GraphUtil.exportAbstractActorTimeBasedGraph(null, "");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//resultBehaviorPatterns.forEach(System.out::println);
 	}
 	
@@ -329,12 +338,12 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 						//将转换过来的模式变成字符串，存储在map中，用于后期的计数
 						StringBuilder pattern = new StringBuilder();
 						for(AbstractActorAndRelativeTimeBehavior a:aablist){
-							pattern.append(a.getActor()+" ");
-							pattern.append(a.getEventType()+" ");
-							Collections.sort(a.getTarget());
+							pattern.append(a.getActor()+"+");
+							pattern.append(a.getEventType()+"+");
+							/*Collections.sort(a.getTarget());
 							for(Integer i:a.getTarget()){
 								pattern.append(i+" ");
-							}
+							}*/
 							pattern.append(a.getRelativeTime());
 							pattern.append("|");
 						}
@@ -410,7 +419,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		long time1 = System.currentTimeMillis();
 
 		AbstractActorAndTimeBasedGspMiningAlgorithm abstractActorAndTimeBasedGspMiningAlgorithm = 
-				new AbstractActorAndTimeBasedGspMiningAlgorithm(20);
+				new AbstractActorAndTimeBasedGspMiningAlgorithm(30);
 		abstractActorAndTimeBasedGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);

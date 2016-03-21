@@ -1,5 +1,6 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
+import edu.hit.yh.gitdata.mine.util.GraphUtil;
 
 public class SimpleGspMiningAlgorithm extends
 		AbstractGspMiningAlgorithm<BehaviorPattern> {
@@ -85,6 +87,12 @@ public class SimpleGspMiningAlgorithm extends
 				System.out.print(s.getActor()+" "+s.getEventType()+" "+s.getTarget()+" |");
 			}
 			System.out.println();
+		}
+		try {
+			GraphUtil.exportSimpleBehaviorGraph(resultBehaviorPatterns, "");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		//resultBehaviorPatterns.forEach(System.out::println);
 		
@@ -262,6 +270,7 @@ public class SimpleGspMiningAlgorithm extends
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
+	
 	}
 	
 }

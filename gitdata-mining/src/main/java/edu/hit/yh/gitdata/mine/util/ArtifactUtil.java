@@ -54,16 +54,19 @@ public class ArtifactUtil {
 			}else {//如果map中部存在对应的artifact,则将新new出来的对象put进map中
 				artifact = new Artifact<SimpleBehavior>();
 				List<SimpleBehavior> behaviors = new ArrayList<SimpleBehavior>();
+				List<String> actors = new ArrayList<String>();
 				artifact.setBehaviorSeq(behaviors);
+				artifact.setActors(actors);
 				artifact.setArtifactId(StringUtil.objectToString(objects[3]));
 				issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
 			}
 			SimpleBehavior simpleBehavior = new SimpleBehavior();
 			artifact.getBehaviorSeq().add(simpleBehavior);
 			/**
-			 * set行为的发起者
+			 * set行为的发起者,若之前存在
 			 */
-			simpleBehavior.setActor(StringUtil.objectToString(objects[0]));
+			String actorString = StringUtil.objectToString(objects[0]);
+			simpleBehavior.setActor(actorString);
 			/**
 			 * set行为的作用对象
 			 */
@@ -103,7 +106,8 @@ public class ArtifactUtil {
 			/**
 			 * set行为的发起者
 			 */
-			simpleBehavior.setActor(StringUtil.objectToString(objects[0]));
+			String actorString = StringUtil.objectToString(objects[0]);
+			simpleBehavior.setActor(actorString);
 			/**
 			 * set行为的作用对象
 			 */

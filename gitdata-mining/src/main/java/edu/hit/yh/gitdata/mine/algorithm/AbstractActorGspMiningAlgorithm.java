@@ -1,5 +1,6 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
+import edu.hit.yh.gitdata.mine.util.GraphUtil;
 
 /**
  * 挖掘抽象用户行为的算法
@@ -104,6 +106,12 @@ public class AbstractActorGspMiningAlgorithm extends
 				}
 			}
 			nowLength++;
+		}
+		try {
+			GraphUtil.exportAbstractActorGraph(null, "");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		//resultBehaviorPatterns.forEach(System.out::println);
 	}
@@ -328,12 +336,12 @@ public class AbstractActorGspMiningAlgorithm extends
 						//将转换过来的模式变成字符串，存储在map中，用于后期的计数
 						StringBuilder pattern = new StringBuilder();
 						for(AbstractActorBehavior a:aablist){
-							pattern.append(a.getActor()+" ");
-							pattern.append(a.getEventType()+" ");
-							Collections.sort(a.getTarget());
+							pattern.append(a.getActor()+"+");
+							pattern.append(a.getEventType()+"+");
+							/*Collections.sort(a.getTarget());
 							for(Integer i:a.getTarget()){
 								pattern.append(i+" ");
-							}
+							}*/
 							pattern.append("|");
 						}
 						//如果在结果Map中找到了匹配的模式，则将其支持度+1

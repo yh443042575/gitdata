@@ -1,5 +1,6 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
 import edu.hit.yh.gitdata.mine.module.TimeBasedBehavior;
 import edu.hit.yh.gitdata.mine.util.ArtifactUtil;
+import edu.hit.yh.gitdata.mine.util.GraphUtil;
 import edu.hit.yh.gitdata.mine.util.RelativeTimeUtil;
 
 /**
@@ -109,7 +111,12 @@ public class TimeBasedGspMiningAlgorithm extends
 			}
 			System.out.println();
 		}
-		
+		try {
+			GraphUtil.exportTimeBasedGraph(resultBehaviorPatterns, "");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//resultBehaviorPatterns.forEach(System.out::println);
 	}
 
@@ -455,9 +462,9 @@ public class TimeBasedGspMiningAlgorithm extends
 
 	public static void main(String args[]) {
 		long time1 = System.currentTimeMillis();
-		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(6);
+		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(3);
 		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
-		timeBasedGspMiningAlgorithm.setRepo("gogits/gogs/");
+		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		timeBasedGspMiningAlgorithm.execute(null);
 		System.out.println("算法结束");
 		System.out.println(System.currentTimeMillis()-time1);
