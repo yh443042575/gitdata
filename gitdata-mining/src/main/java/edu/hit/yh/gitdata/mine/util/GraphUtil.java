@@ -138,10 +138,9 @@ public class GraphUtil {
 				String actor = aat[0];
 				String eventType = aat[1];
 				
-				
 				if(i!=tbList.length-1){//后面还有可连接的结点,则取出下一个行为的相对时间
 					String[] aat2 = tbList[i+1].split("\\+");
-					String relativeTimeString = aat2[2];
+					//String relativeTimeString = aat2[2];
 					sb.append(i+"->"+(i+1)+";");
 				}
 				sb.append(i+"[label = \"person"+actor+"\n"+eventType+"\"];");
@@ -177,10 +176,12 @@ public class GraphUtil {
 		patternList.add(pattern1);*/
 		//GraphUtil.exportSimpleBehaviorGraph(patternList, "");
 	
-		String test = "1+issueComment+0|3+addLable+less than 1|1+reference+less than 1|1+issueComment+less than 1|1+reference+between 3 and 5|4+issueComment+more than 14|7+reference+more than 14|";
+		//String test = "1+issueComment+0|3+addLable+less than 1|1+reference+less than 1|1+issueComment+less than 1|1+reference+between 3 and 5|4+issueComment+more than 14|7+reference+more than 14|";
+		String test = "1+issueComment|3+addLable|1+reference|1+issueComment|1+reference|4+issueComment|7+reference|";
+
 		List<String> aatList = new ArrayList<String>();
 		aatList.add(test);
-		GraphUtil.exportAbstractActorTimeBasedGraph(aatList, "");
+		GraphUtil.exportAbstractActorGraph(aatList, "");
 		
 		
 		

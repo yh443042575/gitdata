@@ -19,6 +19,11 @@ import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
  */
 public class StatisticsUtil {
 
+	/**
+	 * 统计协作行为的长度以及各自存在的数量
+	 * @param repo
+	 * @param artifactType
+	 */
 	public static void getBehaviorLengthAndCount(String repo,String artifactType ){
 		SimpleGspMiningAlgorithm sgm = new SimpleGspMiningAlgorithm(0);
 		List<Artifact<SimpleBehavior>> artifactList = sgm.buildArtifacts(repo, artifactType);
@@ -43,6 +48,11 @@ public class StatisticsUtil {
 		}
 	}
 	
+	/**
+	 * 统计每次协作的人数与协作的数量
+	 * @param repo
+	 * @param artifactType
+	 */
 	public static void getPeopleAndCount(String repo,String artifactType){
 		SimpleGspMiningAlgorithm sgm = new SimpleGspMiningAlgorithm(0);
 		List<Artifact<SimpleBehavior>> artifactList = sgm.buildArtifacts(repo, artifactType);
@@ -75,8 +85,8 @@ public class StatisticsUtil {
 	
 	
 	public static void main(String args[]){
-		//StatisticsUtil.getBehaviorLengthAndCount("jquery/jquery/","Issue");
-		StatisticsUtil.getPeopleAndCount("jquery/jquery/","Issue");
+		//StatisticsUtil.getBehaviorLengthAndCount("zurb/foundation-sites/","Issue");
+		StatisticsUtil.getPeopleAndCount("zurb/foundation-sites/","Issue");
 	}
 	
 }

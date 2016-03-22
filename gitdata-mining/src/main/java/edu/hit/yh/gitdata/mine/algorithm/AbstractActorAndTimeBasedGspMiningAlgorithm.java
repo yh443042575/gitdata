@@ -91,21 +91,27 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
 					HashMap<String, Integer> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
+					List<String> resultPatternList = new ArrayList<String>();
 					for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
 						if(entry.getValue()>getSurpport()){
 							System.out.println(entry.getKey());
+							resultPatternList.add(entry.getKey());
 						} 
+					}
+					/**
+					 * 导出模式结果
+					 */
+					try {
+						GraphUtil.exportAbstractActorTimeBasedGraph(resultPatternList, "");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
 			nowLength++;
 		}
-		try {
-			GraphUtil.exportAbstractActorTimeBasedGraph(null, "");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 		//resultBehaviorPatterns.forEach(System.out::println);
 	}
