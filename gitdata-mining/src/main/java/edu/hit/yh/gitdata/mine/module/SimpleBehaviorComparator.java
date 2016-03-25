@@ -13,7 +13,6 @@ public class SimpleBehaviorComparator implements Comparator<SimpleBehavior> {
 	 * @param o2
 	 * @return
 	 */
-	@Override
 	public int compare(SimpleBehavior o1, SimpleBehavior o2) {
 		if(o1.getCreatedAt().isEmpty()||o1.getCreatedAt().equals("null")){
 			return 1;

@@ -85,8 +85,8 @@ public class StatisticsUtil {
 	
 	
 	public static void main(String args[]){
-		//StatisticsUtil.getBehaviorLengthAndCount("zurb/foundation-sites/","Issue");
-		StatisticsUtil.getPeopleAndCount("zurb/foundation-sites/","Issue");
+		StatisticsUtil.getBehaviorLengthAndCount("Microsoft/TypeScript/","Issue");
+		//StatisticsUtil.getPeopleAndCount("Microsoft/TypeScript/","Issue");
 	}
 	
 }

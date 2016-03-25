@@ -607,13 +607,13 @@ public class IssueDataFromHtml {
 	public static void main(String args[]) throws IOException {
 		HtmlAnalyzer htmlAnalyzer = new HtmlAnalyzer();
 		IssueDataFromHtml issueDataFromHtml = new IssueDataFromHtml();
-		issueDataFromHtml.setRepo("DefinitelyTyped/DefinitelyTyped/");
+		issueDataFromHtml.setRepo("Microsoft/TypeScript/");
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		issueDataFromHtml.setSession(session);
 		//3648
-		for(int i=2013;i<=8671;i++){
+		for(int i=6846;i<=7670;i++){
 			try {
-				String url = "https://github.com/DefinitelyTyped/DefinitelyTyped/issues/"+String.valueOf(i);
+				String url = "https://github.com/Microsoft/TypeScript/issues/"+String.valueOf(i);
 				System.out.println("解析第"+i+"个");
 				issueDataFromHtml.getDataFromIssueUrl(url);
 			} catch (Exception e) {

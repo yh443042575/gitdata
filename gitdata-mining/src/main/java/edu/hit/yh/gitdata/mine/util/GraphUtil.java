@@ -150,7 +150,7 @@ public class GraphUtil {
 			GraphViz graphViz = new GraphViz();
 			
 			byte[] img = graphViz.getGraph(sb.toString(), "png");
-			File out = new File("G:\\aatout-"+String.valueOf(behaviorPatternList.indexOf(pattern))+"." + "png");    // Windows
+			File out = new File(dir+"\\aatout-"+String.valueOf(behaviorPatternList.indexOf(pattern))+"." + "png");    // Windows
 			if(!out.exists()){
 				out.createNewFile();
 			}
