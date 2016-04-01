@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.StyledEditorKit.ForegroundAction;
-
 import edu.hit.yh.gitdata.mine.algorithm.SimpleGspMiningAlgorithm;
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
@@ -33,7 +31,7 @@ public class StatisticsUtil {
 			if(behaviorLengthAndCountMap.containsKey(bl)){
 				Integer count = behaviorLengthAndCountMap.get(bl);
 				count = count+1;
-				behaviorLengthAndCountMap.replace(bl, count);
+				behaviorLengthAndCountMap.put(bl, count);
 			}else {
 				behaviorLengthAndCountMap.put(bl, 1);
 			}
@@ -68,7 +66,7 @@ public class StatisticsUtil {
 			if(behaviorLengthAndCountMap.containsKey(p)){
 				Integer count = behaviorLengthAndCountMap.get(p);
 				count = count+1;
-				behaviorLengthAndCountMap.replace(p, count);
+				behaviorLengthAndCountMap.put(p, count);
 			}else {
 				behaviorLengthAndCountMap.put(p, 1);
 			}

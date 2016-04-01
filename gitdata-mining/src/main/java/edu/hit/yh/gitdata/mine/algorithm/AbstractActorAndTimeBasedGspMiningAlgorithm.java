@@ -363,7 +363,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 					for(String pattern:combinationSet){
 						if(abstractActorResultMap.containsKey(pattern)){
 							int i = abstractActorResultMap.get(pattern);
-							abstractActorResultMap.replace(pattern, i+1);
+							abstractActorResultMap.put(pattern, i+1);
 						}else {
 							abstractActorResultMap.put(pattern, 1);
 						}
