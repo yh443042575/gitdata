@@ -42,9 +42,13 @@ public class RelativeTimeUtil {
 			}else if (quotient>5&&quotient<=7){//5天~7天之间	
 				return "between 5 and 7";
 			}else if (quotient>7&&quotient<=14){//7天~14天之间
-				return "between 7 and 14";
+				return "between 2 and 3 week";
+			}else if (quotient>14&&quotient<=21){//7天~14天之间
+				return "between 3 and 4 week";
+			}else if (quotient>21&&quotient<=28){//7天~14天之间
+				return "between 3 and 4 week";
 			}else if (quotient>14){//大于两周
-				return "more than 14";
+				return "more than 1 month";
 			}
 			
 		} catch (ParseException e) {
