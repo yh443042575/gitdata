@@ -79,6 +79,9 @@ public class SimpleGspMiningAlgorithm extends
 			nowLength++;
 			
 		}
+		/*
+		 * 输出结果到本地路径，用作后期分析用
+		 */
 		for(BehaviorPattern<SimpleBehavior> bp:resultBehaviorPatterns){
 			List<SimpleBehavior> sList = bp.getBehaviorList();
 			System.out.print("surpport="+bp.getSurpport()+" ");
@@ -269,7 +272,7 @@ public class SimpleGspMiningAlgorithm extends
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
-	
+		
 	}
 	
 }

@@ -437,7 +437,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
-
+		
 	}
 	
 	

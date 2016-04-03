@@ -76,7 +76,9 @@ public class GraphUtil {
 			GraphViz graphViz = new GraphViz();
 			
 			byte[] img = graphViz.getGraph(sb.toString(), "png");
+			
 			File out = new File("G:\\tout-"+String.valueOf(behaviorPatternList.indexOf(pattern))+"." + "png");    // Windows
+			
 			if(!out.exists()){
 				out.createNewFile();
 			}
@@ -86,7 +88,12 @@ public class GraphUtil {
 	}
 	
 	
-	
+	/**
+	 * 将带有相对时间的模式导出到指定的路径中
+	 * @param behaviorPatternList
+	 * @param dir
+	 * @throws IOException
+	 */
 	public static void exportAbstractActorTimeBasedGraph(List<String> behaviorPatternList,String dir) throws IOException{
 		//最终生成的图形dot代码存在sb中
 		StringBuilder sb=new StringBuilder();
