@@ -1,6 +1,11 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
+import edu.hit.yh.gitdata.mine.constant.DirConstant;
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
 import edu.hit.yh.gitdata.mine.module.SimpleBehavior;
@@ -82,21 +88,37 @@ public class SimpleGspMiningAlgorithm extends
 		/*
 		 * 输出结果到本地路径，用作后期分析用
 		 */
-		for(BehaviorPattern<SimpleBehavior> bp:resultBehaviorPatterns){
-			List<SimpleBehavior> sList = bp.getBehaviorList();
-			System.out.print("surpport="+bp.getSurpport()+" ");
-			for(SimpleBehavior s :sList){
-				System.out.print(s.getActor()+" "+s.getEventType()+" "+s.getTarget()+" |");
-			}
-			System.out.println();
-		}
+		
 		try {
-			GraphUtil.exportSimpleBehaviorGraph(resultBehaviorPatterns, "");
+			
+			File file = new File(DirConstant.PATTERN_RESULT_FOLDER+"SGM"+"-"+getRepo().replaceAll("/", "-")+getSurpport()+".txt");
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+			for(BehaviorPattern<SimpleBehavior> bp:resultBehaviorPatterns){
+				List<SimpleBehavior> sList = bp.getBehaviorList();
+				System.out.print("surpport="+bp.getSurpport()+" ");
+				for(SimpleBehavior s :sList){
+					String behavior = s.getActor()+" "+s.getEventType()+" |";
+					System.out.print(behavior);
+					bw.write(behavior);
+				}
+				System.out.println();
+				bw.write("->"+String.valueOf(bp.getSurpport()));
+				bw.write("\n");
+				bw.flush();
+			}
+			bw.close();
+			//下面是画图函数将得到的模式结果画在指定的文件夹下
+			//GraphUtil.exportSimpleBehaviorGraph(resultBehaviorPatterns, "");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//resultBehaviorPatterns.forEach(System.out::println);
 		
 	}
 	
@@ -267,7 +289,7 @@ public class SimpleGspMiningAlgorithm extends
 	public static void main(String args[]){
 		
 		long time1 = System.currentTimeMillis();
-		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(20);
+		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(30);
 		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);

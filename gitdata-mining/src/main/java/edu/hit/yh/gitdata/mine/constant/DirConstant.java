@@ -7,6 +7,7 @@ package edu.hit.yh.gitdata.mine.constant;
  */
 public class DirConstant {
 
+	/*-----------------------------windows下----------------------------*/
 	/**
 	 * 具体用户不带相对时间的模式
 	 */
@@ -26,5 +27,14 @@ public class DirConstant {
 	 * 抽象用户带有相对时间的模式
 	 */
 	public static String ABSTRACT_TIMEBASED_GSP_RESULT_DIR = "G:\\githubGspResult\\AbstractTimeGSP";
+	
+	/**
+	 * OSX下的模式结果存放文件目录
+	 */
+	public static String PATTERN_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/";
+	
+	
+	
+	
 	
 }
