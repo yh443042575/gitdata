@@ -1,6 +1,11 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -100,17 +105,30 @@ public class AbstractActorGspMiningAlgorithm extends
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
 					HashMap<String, Integer> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
-					List<String> printList = new ArrayList<String>();
-					for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
-						if(entry.getValue()>getSurpport()){
-							printList.add(entry.getKey());
-							System.out.print(entry.getKey()+" ");
-							System.out.println(entry.getValue());
-						} 
-					}
 					//打印所有的结果
 					try {
-						GraphUtil.exportAbstractActorGraph(printList, DirConstant.ABSTRACT_GSP_RESULT_DIR);
+						File file = new File(DirConstant.PATTERN_RESULT_FOLDER+"AAGM"+"-"+getRepo().replaceAll("/", "-")+getSurpport()+".txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+						
+						List<String> printList = new ArrayList<String>();
+						for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
+							if(entry.getValue()>getSurpport()){
+								printList.add(entry.getKey());
+								System.out.print(entry.getKey()+" ");
+								System.out.println(entry.getValue());
+								String result = entry.getKey()+"->"+entry.getValue();
+								System.out.println(result);
+								bw.write(result);
+								bw.write("\n");
+								bw.flush();
+							} 
+						}
+						bw.close();
+						//下面是画图函数将得到的模式结果画在指定的文件夹下
+						//GraphUtil.exportAbstractActorGraph(printList, DirConstant.ABSTRACT_GSP_RESULT_DIR);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -119,7 +137,6 @@ public class AbstractActorGspMiningAlgorithm extends
 			}
 			nowLength++;
 		}
-		
 		//resultBehaviorPatterns.forEach(System.out::println);
 	}
 	
@@ -427,7 +444,7 @@ public class AbstractActorGspMiningAlgorithm extends
 	public static void main(String args[]){
 		long time1 = System.currentTimeMillis();
 
-		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(9);
+		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(30);
 		abstractActorGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorGspMiningAlgorithm.execute(null);

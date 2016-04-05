@@ -1,10 +1,13 @@
 package edu.hit.yh.gitdata.grphmodel;
 
+import lombok.Data;
+
 /**
  * 生成图像所需要的点
  * @author DHAO
  *
  */
+@Data
 public class ShannonWiener {
 
 	/**

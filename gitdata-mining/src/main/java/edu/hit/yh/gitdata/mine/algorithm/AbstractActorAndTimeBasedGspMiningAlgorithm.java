@@ -1,6 +1,10 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -92,24 +96,42 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
 				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
+					/**
+					 * 得到最后的相对模式
+					 */
 					HashMap<String, Integer> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
-					List<String> printList = new ArrayList<String>();
-					for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
-						if(entry.getValue()>getSurpport()){
-							System.out.println(entry.getKey());
-							printList.add(entry.getKey());
-							System.out.println(entry.getValue());
-						} 
-					}
 					/**
 					 * 导出模式结果
 					 */
 					try {
-						GraphUtil.exportAbstractActorTimeBasedGraph(printList, DirConstant.ABSTRACT_TIMEBASED_GSP_RESULT_DIR);
+						File file = new File(DirConstant.PATTERN_RESULT_FOLDER+"AATGM"+"-"+getRepo().replaceAll("/", "-")+getSurpport()+".txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+						
+						List<String> printList = new ArrayList<String>();
+						for(Map.Entry<String, Integer> entry:abstractActorsResultList.entrySet()){
+							if(entry.getValue()>getSurpport()){
+								printList.add(entry.getKey());
+								System.out.print(entry.getKey()+" ");
+								System.out.println(entry.getValue());
+								String result = entry.getKey()+"->"+entry.getValue();
+								System.out.println(result);
+								bw.write(result);
+								bw.write("\n");
+								bw.flush();
+							} 
+						}
+						bw.close();
+						//下面是画图函数将得到的模式结果画在指定的文件夹下
+						//GraphUtil.exportAbstractActorTimeBasedGraph(printList, DirConstant.ABSTRACT_TIMEBASED_GSP_RESULT_DIR);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
+					
 				}
 			}
 			nowLength++;
@@ -432,7 +454,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		long time1 = System.currentTimeMillis();
 
 		AbstractActorAndTimeBasedGspMiningAlgorithm abstractActorAndTimeBasedGspMiningAlgorithm = 
-				new AbstractActorAndTimeBasedGspMiningAlgorithm(30);
+				new AbstractActorAndTimeBasedGspMiningAlgorithm(20);
 		abstractActorAndTimeBasedGspMiningAlgorithm.setArtifactType("Issue");
 		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);

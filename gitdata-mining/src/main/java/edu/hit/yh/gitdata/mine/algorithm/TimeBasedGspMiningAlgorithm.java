@@ -1,14 +1,21 @@
 package edu.hit.yh.gitdata.mine.algorithm;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import edu.hit.yh.gitdata.mine.constant.DirConstant;
 import edu.hit.yh.gitdata.mine.module.AbstractActorBehavior;
 import edu.hit.yh.gitdata.mine.module.Artifact;
 import edu.hit.yh.gitdata.mine.module.BehaviorPattern;
@@ -103,21 +110,38 @@ public class TimeBasedGspMiningAlgorithm extends
 			nowLength++;
 			System.out.println("nowLength" + nowLength);
 		}
-		for(BehaviorPattern<TimeBasedBehavior> bp:resultBehaviorPatterns){
-			List<TimeBasedBehavior> sList = bp.getBehaviorList();
-			System.out.print("surpport="+bp.getSurpport()+" ");
-			for(TimeBasedBehavior s :sList){
-				System.out.print(s.getActor()+" "+s.getEventType()+" "+s.getTarget()+" "+s.getRelativeTime()+" |");
-			}
-			System.out.println();
-		}
+		/**
+		 * 输出结果到本地路径，用作后期分析
+		 */
+
 		try {
-			GraphUtil.exportTimeBasedGraph(resultBehaviorPatterns, "");
+			File file = new File(DirConstant.PATTERN_RESULT_FOLDER + "TBGM"
+					+ "-" + getRepo().replaceAll("/", "-") + getSurpport()
+					+ ".txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+			for (BehaviorPattern<TimeBasedBehavior> bp : resultBehaviorPatterns) {
+				List<TimeBasedBehavior> sList = bp.getBehaviorList();
+				System.out.print("surpport=" + bp.getSurpport() + " ");
+				for (TimeBasedBehavior s : sList) {
+					String behavior = s.getActor() + " " + s.getEventType() + " "
+							 + s.getRelativeTime() + " |";
+					System.out.print(behavior);
+					bw.write(behavior);
+				}
+				System.out.println();
+				bw.write("->"+String.valueOf(bp.getSurpport()));
+				bw.write("\n");
+				bw.flush();
+			}
+			//GraphUtil.exportTimeBasedGraph(resultBehaviorPatterns, "");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//resultBehaviorPatterns.forEach(System.out::println);
+		// resultBehaviorPatterns.forEach(System.out::println);
 	}
 
 	/**
@@ -186,6 +210,7 @@ public class TimeBasedGspMiningAlgorithm extends
 				patternlist);
 		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
 		Collections.copy(tempList, patternlist);
+		Set<String> patternSet = new HashSet<String>();
 		for (BehaviorPattern behaviorPattern1 : tempList) {
 			for (BehaviorPattern behaviorPattern2 : patternlist) {
 				if (tempList.indexOf(behaviorPattern1) != patternlist
@@ -201,7 +226,8 @@ public class TimeBasedGspMiningAlgorithm extends
 					/**
 					 * 重新构造一个TimeBasedBehavior,以防引用被篡改
 					 */
-					TimeBasedBehavior t2 = timeBasedBehaviorList2.get(timeBasedBehaviorList2.size() - 1);
+					TimeBasedBehavior t2 = timeBasedBehaviorList2
+							.get(timeBasedBehaviorList2.size() - 1);
 					TimeBasedBehavior t3 = new TimeBasedBehavior();
 					t3.setActor(new String(t2.getActor()));
 					t3.setEventType(new String(t2.getEventType()));
@@ -209,11 +235,23 @@ public class TimeBasedGspMiningAlgorithm extends
 					t3.setCreatedAt(new String(t2.getCreatedAt()));
 					joinList.add(t3);
 					List<TimeBasedBehavior> timeBasedBehaviorList3 = joinList;
+					/**
+					 * 将模式转换成list然后放在set中检查，如果已经存在则不添加该模式
+					 */
+					String patternString = "";
+					for(TimeBasedBehavior tbb:timeBasedBehaviorList3){
+						patternString += tbb.getActor()+" ";
+						patternString += tbb.getEventType()+" ";
+						patternString += tbb.getRelativeTime()+" |"; 
+					}
+					if(!patternSet.contains(patternString)){//如果set中不存在该模式则该模式是新的
+						patternSet.add(patternString);
 					BehaviorPattern behaviorPattern = new BehaviorPattern<AbstractActorBehavior>();
 					behaviorPattern.setBehaviorList(timeBasedBehaviorList3);
 					behaviorPattern.setSurpport(0);
 					resultList.add(behaviorPattern);
 					System.out.println("成功添加pattern" + behaviorPattern);
+					}
 				}
 			}
 		}
@@ -235,13 +273,21 @@ public class TimeBasedGspMiningAlgorithm extends
 				.getBehaviorList();
 
 		if (timeBasedBehaviorList1.size() == 1) {
-			if (timeBasedBehaviorList1.get(0).equals(timeBasedBehaviorList2.get(0))
+			if (timeBasedBehaviorList1.get(0).equals(
+					timeBasedBehaviorList2.get(0))
 					&& // 若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
-					timeBasedBehaviorList1.get(0).getCreatedAt().equals(timeBasedBehaviorList2.get(0).getCreatedAt())) {
+					timeBasedBehaviorList1
+							.get(0)
+							.getCreatedAt()
+							.equals(timeBasedBehaviorList2.get(0)
+									.getCreatedAt())) {
 				return false;
-			} else if(RelativeTimeUtil.calculateRelativeTime(timeBasedBehaviorList1.get(0).getCreatedAt(), timeBasedBehaviorList2.get(0).getCreatedAt()).equals("unleagle")) {
+			} else if (RelativeTimeUtil.calculateRelativeTime(
+					timeBasedBehaviorList1.get(0).getCreatedAt(),
+					timeBasedBehaviorList2.get(0).getCreatedAt()).equals(
+					"unleagle")) {
 				return false;
-			}else {
+			} else {
 				return true;
 			}
 		}
@@ -250,11 +296,17 @@ public class TimeBasedGspMiningAlgorithm extends
 		 * 如果长度大于1，则遍历pattern进行比较
 		 */
 		for (int i = 1; i < timeBasedBehaviorList1.size(); i++) {
-			if(i==1){
-				if(!(timeBasedBehaviorList2.get(i-1).simplEquals(timeBasedBehaviorList1.get(i)))
-						/*||RelativeTimeUtil.calculateRelativeTime(timeBasedBehaviorList1.get(i).getCreatedAt(), timeBasedBehaviorList2.get(i-1).getCreatedAt()).equals("unleagle"))*/)
-				return false;
-			}else if (!timeBasedBehaviorList1.get(i).equals(
+			if (i == 1) {
+				if (!(timeBasedBehaviorList2.get(i - 1)
+						.simplEquals(timeBasedBehaviorList1.get(i)))
+				/*
+				 * ||RelativeTimeUtil.calculateRelativeTime(timeBasedBehaviorList1
+				 * .get(i).getCreatedAt(),
+				 * timeBasedBehaviorList2.get(i-1).getCreatedAt
+				 * ()).equals("unleagle"))
+				 */)
+					return false;
+			} else if (!timeBasedBehaviorList1.get(i).equals(
 					timeBasedBehaviorList2.get(i - 1))) {
 				return false;
 			}
@@ -269,7 +321,7 @@ public class TimeBasedGspMiningAlgorithm extends
 	public List<BehaviorPattern> pruning(List<BehaviorPattern> patternlist,
 			Object artifacts) {
 		System.out.println("进行剪枝操作");
-		if(patternlist.isEmpty()){
+		if (patternlist.isEmpty()) {
 			return patternlist;
 		}
 		// 算法所能容忍的最小支持度
@@ -287,46 +339,63 @@ public class TimeBasedGspMiningAlgorithm extends
 		 */
 		if (patternlist.get(0).getBehaviorList().size() == 1) {
 
-		} else if (patternlist.get(0).getBehaviorList().size() == 2) {//如果长度为2的话，则需要计算模式中的相对时间，才能返回结果
-			//用来存储已经整理出来的带有相对时间的模式
+		} else if (patternlist.get(0).getBehaviorList().size() == 2) {// 如果长度为2的话，则需要计算模式中的相对时间，才能返回结果
+			// 用来存储已经整理出来的带有相对时间的模式
 			HashMap<String, BehaviorPattern> prePatternMap = new HashMap<String, BehaviorPattern>();
 			for (BehaviorPattern<TimeBasedBehavior> preBehaviorPattern : patternlist) {
 				for (Artifact<SimpleBehavior> artifact : artifactList) {
 					if (isNeedToCheck(preBehaviorPattern, artifact)) {
-						//用来标记prePattern已经扫描到了第几个
-						List<TimeBasedBehavior> preTimePatternList = preBehaviorPattern.getBehaviorList();
-						List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
+						// 用来标记prePattern已经扫描到了第几个
+						List<TimeBasedBehavior> preTimePatternList = preBehaviorPattern
+								.getBehaviorList();
+						List<SimpleBehavior> artBehaviorSeq = artifact
+								.getBehaviorSeq();
 						int preNum = 0;
 						int artNum = 0;
-						for(SimpleBehavior simpleBehavior:artBehaviorSeq){
-							if(preTimePatternList.get(preNum).simplEquals(simpleBehavior)){
-								if(preNum == 1){//说明已经成功匹配到了一个长度为2的模式
-									String r = RelativeTimeUtil.calculateRelativeTime(artBehaviorSeq.get(artNum).getCreatedAt(),simpleBehavior.getCreatedAt());
-									//为第二个没有相对时间的行为赋予上相对时间
-									preTimePatternList.get(preNum).setRelativeTime(r);
-									if(!preTimePatternList.get(0).getRelativeTime().equals("0")){
-										System.out.println("有问题");
+						for (SimpleBehavior simpleBehavior : artBehaviorSeq) {
+							if (preTimePatternList.get(preNum).simplEquals(
+									simpleBehavior)) {
+								if (preNum == 1) {// 说明已经成功匹配到了一个长度为2的模式
+									String r = RelativeTimeUtil
+											.calculateRelativeTime(
+													artBehaviorSeq.get(artNum)
+															.getCreatedAt(),
+													simpleBehavior
+															.getCreatedAt());
+									// 为第二个没有相对时间的行为赋予上相对时间
+									preTimePatternList.get(preNum)
+											.setRelativeTime(r);
+									if (!preTimePatternList.get(0)
+											.getRelativeTime().equals("0")) {
 									}
 									StringBuilder patternInfo = new StringBuilder();
 									/*
 									 * 构造每一个pattern所具有的唯一key
 									 * 由三个元素组成，actor,行为类型，相对时间
 									 */
-									for(TimeBasedBehavior t:preTimePatternList){
-										patternInfo.append(t.getActor()+" ");
-										patternInfo.append(t.getEventType()+" ");
-										patternInfo.append(t.getRelativeTime()+"|");
+									for (TimeBasedBehavior t : preTimePatternList) {
+										patternInfo.append(t.getActor() + " ");
+										patternInfo.append(t.getEventType()
+												+ " ");
+										patternInfo.append(t.getRelativeTime()
+												+ "|");
 									}
-									if(prePatternMap.containsKey(patternInfo.toString())){//如果这个pattern已经被统计过则直接支持度+1
-										prePatternMap.get(patternInfo.toString()).addSurpport();
-									}else{//如果没有被统计过，则新建一个BehaviorPattern，然后支持度置为1
+									if (prePatternMap.containsKey(patternInfo
+											.toString())) {// 如果这个pattern已经被统计过则直接支持度+1
+										prePatternMap.get(
+												patternInfo.toString())
+												.addSurpport();
+									} else {// 如果没有被统计过，则新建一个BehaviorPattern，然后支持度置为1
 										BehaviorPattern<TimeBasedBehavior> pattern = new BehaviorPattern<TimeBasedBehavior>();
 										pattern.setBehaviorList(preTimePatternList);
 										pattern.setSurpport(1);
-										prePatternMap.put(patternInfo.toString(), pattern);
+										prePatternMap
+												.put(patternInfo.toString(),
+														pattern);
 									}
-								}else{
-									artNum = artBehaviorSeq.indexOf(simpleBehavior);
+								} else {
+									artNum = artBehaviorSeq
+											.indexOf(simpleBehavior);
 									preNum++;
 								}
 							}
@@ -335,19 +404,21 @@ public class TimeBasedGspMiningAlgorithm extends
 				}
 			}
 			List<BehaviorPattern> list = new ArrayList<BehaviorPattern>();
-			for (Map.Entry<String, BehaviorPattern> entry:prePatternMap.entrySet()) {
+			for (Map.Entry<String, BehaviorPattern> entry : prePatternMap
+					.entrySet()) {
 				if (entry.getValue().getSurpport() >= this.getSurpport()) {
 					list.add(entry.getValue());
 				}
 			}
 			return list;
-		} else if (patternlist.get(0).getBehaviorList().size() > 2) {//如果模式长度大于2，则正常计数
+		} else if (patternlist.get(0).getBehaviorList().size() > 2) {// 如果模式长度大于2，则正常计数
 			for (BehaviorPattern<TimeBasedBehavior> preBehaviorPattern : patternlist) {
 				for (Artifact<SimpleBehavior> artifact : artifactList) {
 					if (isNeedToCheck(preBehaviorPattern, artifact)) {// 如果有检查的必要
 						int artPoint = 0;
-						List<SimpleBehavior> artBehaviorSeq = artifact.getBehaviorSeq();
-						//建立与pattern的List长度一样长的resultIndexList，每匹配成功一个行为，则将该行为在artifact中的角标记录下来
+						List<SimpleBehavior> artBehaviorSeq = artifact
+								.getBehaviorSeq();
+						// 建立与pattern的List长度一样长的resultIndexList，每匹配成功一个行为，则将该行为在artifact中的角标记录下来
 						List<Integer> resultIndexList = new ArrayList<Integer>();
 						boolean flag = true;
 						/**
@@ -370,9 +441,12 @@ public class TimeBasedGspMiningAlgorithm extends
 										String preRelativeTime = preTimeBehavior
 												.getRelativeTime();
 										if (preNum != 0) {// 如果验证的是候选行为不是第一个，则需要计算artifact的相对时间，只要行为对上就可以
-											System.out.println("preNum"+ preNum);
-											System.out.println("reSize"+resultIndexList.size());
-											int artlastPoint = resultIndexList.get(preNum - 1);
+											System.out.println("preNum"
+													+ preNum);
+											System.out.println("reSize"
+													+ resultIndexList.size());
+											int artlastPoint = resultIndexList
+													.get(preNum - 1);
 											String artifactRealtiveTime = RelativeTimeUtil
 													.calculateRelativeTime(
 															artBehaviorSeq
@@ -389,8 +463,10 @@ public class TimeBasedGspMiningAlgorithm extends
 												 * 然后将artPoint置为artlastPoint
 												 * +1的位置
 												 */
-												if (artPoint == artBehaviorSeq.size() - 1){
-													artPoint = resultIndexList.get(preNum - 1) + 1;
+												if (artPoint == artBehaviorSeq
+														.size() - 1) {
+													artPoint = resultIndexList
+															.get(preNum - 1) + 1;
 													preNum -= 1;
 												}
 												if (preNum == -1) {// 如果preNum已经不能再减了，说明这个artifact里着实找不到序列了
@@ -403,20 +479,24 @@ public class TimeBasedGspMiningAlgorithm extends
 										// 到这里是已经找到了相对应的行为了
 										if (preNum != preBehaviorPattern
 												.getBehaviorList().size() - 1) {// 如果还没有检查完当前behaviorPattern则继续
-											if(resultIndexList.size()-1<preNum){
-												//添加0没什么意义，就是让list多一位，以便使用set方法时不出异常
+											if (resultIndexList.size() - 1 < preNum) {
+												// 添加0没什么意义，就是让list多一位，以便使用set方法时不出异常
 												resultIndexList.add(0);
 											}
-											resultIndexList.set(preNum, artPoint);
+											resultIndexList.set(preNum,
+													artPoint);
 											break;
 										} else {// 如果扫描成功，则当前的behaviorPattern支持度+1
 											preBehaviorPattern.addSurpport();
-											System.out.println("扫描成功 pattern 的支持度为" + preBehaviorPattern.getSurpport());
+											System.out
+													.println("扫描成功 pattern 的支持度为"
+															+ preBehaviorPattern
+																	.getSurpport());
 											break;
 										}
 									}
 								}
-							}else{//如果已经没有搜索下去的必要
+							} else {// 如果已经没有搜索下去的必要
 								break;
 							}
 						}
@@ -462,12 +542,12 @@ public class TimeBasedGspMiningAlgorithm extends
 
 	public static void main(String args[]) {
 		long time1 = System.currentTimeMillis();
-		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(3);
+		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(30);
 		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
 		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
 		timeBasedGspMiningAlgorithm.execute(null);
 		System.out.println("算法结束");
-		System.out.println(System.currentTimeMillis()-time1);
+		System.out.println(System.currentTimeMillis() - time1);
 	}
 
 }
