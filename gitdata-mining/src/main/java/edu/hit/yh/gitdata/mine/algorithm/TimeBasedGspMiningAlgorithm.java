@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.hit.yh.gitdata.githubDataModel.HibernateUtil;
 import edu.hit.yh.gitdata.mine.constant.DirConstant;
 import edu.hit.yh.gitdata.mine.module.AbstractActorBehavior;
 import edu.hit.yh.gitdata.mine.module.Artifact;
@@ -60,6 +61,7 @@ public class TimeBasedGspMiningAlgorithm extends
 		boolean algorithmEndFlag = false;
 		List<Artifact<SimpleBehavior>> artifactList = this.buildArtifacts(
 				getRepo(), getArtifactType());
+		//HibernateUtil.closeSessionFactory();
 		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 		List<BehaviorPattern> resultBehaviorPatterns = new ArrayList<BehaviorPattern>();
 		/**
@@ -542,12 +544,19 @@ public class TimeBasedGspMiningAlgorithm extends
 
 	public static void main(String args[]) {
 		long time1 = System.currentTimeMillis();
-		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(30);
+		TimeBasedGspMiningAlgorithm timeBasedGspMiningAlgorithm = new TimeBasedGspMiningAlgorithm(150);
 		timeBasedGspMiningAlgorithm.setArtifactType("Issue");
-		timeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
+		timeBasedGspMiningAlgorithm.setRepo("golang/go/");
 		timeBasedGspMiningAlgorithm.execute(null);
 		System.out.println("算法结束");
 		System.out.println(System.currentTimeMillis() - time1);
+		/*timeBasedGspMiningAlgorithm.setSurpport(60);
+		timeBasedGspMiningAlgorithm.execute(null);
+		timeBasedGspMiningAlgorithm.setSurpport(90);
+		timeBasedGspMiningAlgorithm.execute(null);
+		timeBasedGspMiningAlgorithm.setSurpport(120);
+		timeBasedGspMiningAlgorithm.execute(null);*/
+		
 	}
 
 }

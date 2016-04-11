@@ -24,6 +24,9 @@ public class RelativeTimeUtil {
 		time2= time2.replaceAll("[T-Z]", " ");
 		
 		try {
+			if(time1==null||time2==null||time1.equals("null")||time2.equals("null")){
+				return "between 1 and 3";
+			}
 			Date date1 = sdf.parse(time1);
 			Date date2 = sdf.parse(time2);
 			
@@ -42,10 +45,10 @@ public class RelativeTimeUtil {
 			}else if (quotient>5&&quotient<=7){//5天~7天之间	
 				return "between 5 and 7";
 			}else if (quotient>7&&quotient<=14){//7天~14天之间
+				return "between 1 and 2 week";
+			}else if (quotient>14&&quotient<=21){//14天~21天之间
 				return "between 2 and 3 week";
-			}else if (quotient>14&&quotient<=21){//7天~14天之间
-				return "between 3 and 4 week";
-			}else if (quotient>21&&quotient<=28){//7天~14天之间
+			}else if (quotient>21&&quotient<=28){//21天~28天之间
 				return "between 3 and 4 week";
 			}else if (quotient>14){//大于两周
 				return "more than 1 month";

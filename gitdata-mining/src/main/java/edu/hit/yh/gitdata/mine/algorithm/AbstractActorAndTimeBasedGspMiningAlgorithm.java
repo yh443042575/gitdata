@@ -54,7 +54,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		int nowLength = 1;
 		boolean algorithmEndFlag = false;
 		List<Artifact<SimpleBehavior>> artifactList = this.buildArtifacts(getRepo(), getArtifactType());
-		HibernateUtil.closeSessionFactory();
+		//HibernateUtil.closeSessionFactory();
 		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 		List<BehaviorPattern> resultBehaviorPatterns  = new ArrayList<BehaviorPattern>();
 		/**
@@ -94,7 +94,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 				preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 				preBehaviorPatterns = this.joinOperation(tempList);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
-				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
+				if(preBehaviorPatterns.size()==0||nowLength>=6){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
 					/**
 					 * 得到最后的相对模式
@@ -224,7 +224,7 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		System.out.println("进行连接操作...");
 		for(BehaviorPattern behaviorPattern1:tempList){
 			for(BehaviorPattern behaviorPattern2:patternlist){
-				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1, behaviorPattern2)){//如果两个行为模式是可以join的
+				if(/*tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&*/isAbleToJoin(behaviorPattern1, behaviorPattern2)){//如果两个行为模式是可以join的
 					List<AbstractActorAndRelativeTimeBehavior> abstractActorBehaviorList1 =  behaviorPattern1.getBehaviorList();
 					List<AbstractActorAndRelativeTimeBehavior> abstractActorBehaviorList2 =  behaviorPattern2.getBehaviorList();
 					List<AbstractActorAndRelativeTimeBehavior> joinList = new ArrayList<AbstractActorAndRelativeTimeBehavior>(abstractActorBehaviorList1);
@@ -251,13 +251,14 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		List<AbstractActorAndRelativeTimeBehavior> abstractActorBehaviorList2 =  behaviorPattern2.getBehaviorList();
 		
 		if(abstractActorBehaviorList1.size()==1){
-			if(abstractActorBehaviorList1.get(0).equals(abstractActorBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
+			/*if(abstractActorBehaviorList1.get(0).equals(abstractActorBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
 					abstractActorBehaviorList1.get(0).getCreatedAt().equals(
 							abstractActorBehaviorList2.get(0).getCreatedAt())){
 				return false;
 			}else{
 				return true;
-			}
+			}*/
+			return true;
 		}
 		
 		for(int i=1;i<abstractActorBehaviorList1.size();i++){
@@ -322,6 +323,8 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		HashMap<String, Integer> abstractActorResultMap = new HashMap<String, Integer>();
 		
 		for(BehaviorPattern<AbstractActorAndRelativeTimeBehavior> aab:patternList){
+			int x = patternList.indexOf(aab);
+			System.out.println("检查第"+x+"个模式"+" "+"一共"+patternList.size());
 			for(Artifact<SimpleBehavior> artifact:artifacts){
 				/*
 				 * 得到在这个artifact下满足与当前模式的角标序列
@@ -427,8 +430,9 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 						Collections.copy(result, culculateList);
 						resultList.add(result);
 						cPoint--;
+						endflag = true;
 					}else{
-						System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
+						//System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
 						if(culculateList.size()>1000){
 							System.out.println("pause");
 						}
@@ -454,11 +458,15 @@ AbstractGspMiningAlgorithm<BehaviorPattern>{
 		long time1 = System.currentTimeMillis();
 
 		AbstractActorAndTimeBasedGspMiningAlgorithm abstractActorAndTimeBasedGspMiningAlgorithm = 
-				new AbstractActorAndTimeBasedGspMiningAlgorithm(20);
+				new AbstractActorAndTimeBasedGspMiningAlgorithm(21);
 		abstractActorAndTimeBasedGspMiningAlgorithm.setArtifactType("Issue");
-		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("jquery/jquery/");
+		abstractActorAndTimeBasedGspMiningAlgorithm.setRepo("docker/docker/");
 		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
+		/*abstractActorAndTimeBasedGspMiningAlgorithm.setSurpport(90);
+		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);
+		abstractActorAndTimeBasedGspMiningAlgorithm.setSurpport(120);
+		abstractActorAndTimeBasedGspMiningAlgorithm.execute(null);*/
 		
 	}
 	

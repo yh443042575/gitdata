@@ -89,7 +89,7 @@ public class SimpleGspMiningAlgorithm extends
 		 * 输出结果到本地路径，用作后期分析用
 		 */
 		try {
-			File file = new File(DirConstant.PATTERN_RESULT_FOLDER+"SGM"+"-"+getRepo().replaceAll("/", "-")+getSurpport()+".txt");
+			File file = new File(DirConstant.PATTERN_RESULT_FOLDER+"SGM"+"-"+getRepo().replaceAll("/", "-")+getSurpport()+".txt");//getsurpport()
 			if(!file.exists()){
 				file.createNewFile();
 			}
@@ -287,8 +287,8 @@ public class SimpleGspMiningAlgorithm extends
 	public static void main(String args[]){
 		
 		long time1 = System.currentTimeMillis();
-		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(5);
-		simpleGspMiningAlgorithm.setRepo("jquery/jquery/");
+		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(28);
+		simpleGspMiningAlgorithm.setRepo("atom/electron/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);

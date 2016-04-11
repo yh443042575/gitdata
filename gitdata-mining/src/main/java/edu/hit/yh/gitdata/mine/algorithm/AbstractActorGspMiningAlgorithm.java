@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.naming.spi.DirStateFactory.Result;
 
@@ -62,7 +63,7 @@ public class AbstractActorGspMiningAlgorithm extends
 		int nowLength = 1;
 		boolean algorithmEndFlag = false;
 		List<Artifact<SimpleBehavior>> artifactList = this.buildArtifacts(getRepo(), getArtifactType());
-		HibernateUtil.closeSessionFactory();
+		//HibernateUtil.closeSessionFactory();
 		List<BehaviorPattern> preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 		List<BehaviorPattern> resultBehaviorPatterns  = new ArrayList<BehaviorPattern>();
 		/**
@@ -102,7 +103,7 @@ public class AbstractActorGspMiningAlgorithm extends
 				preBehaviorPatterns = new ArrayList<BehaviorPattern>();
 				preBehaviorPatterns = this.joinOperation(tempList);
 				preBehaviorPatterns = this.pruning(preBehaviorPatterns,artifactList);
-				if(preBehaviorPatterns.size()==0){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
+				if(preBehaviorPatterns.size()==0||nowLength>=7){//如果找不到候选序列了，说明第一步结束了，我们得到了基于纯操作的模式
 					algorithmEndFlag = true;
 					HashMap<String, Integer> abstractActorsResultList = findAbstractActorBehaviorPatterns(resultBehaviorPatterns,artifactList);
 					//打印所有的结果
@@ -221,14 +222,27 @@ public class AbstractActorGspMiningAlgorithm extends
 		List<BehaviorPattern> resultList = new ArrayList<BehaviorPattern>();
 		Collections.copy(tempList, patternlist);
 		System.out.println("进行连接操作...");
+		/**
+		 * 用于避免重复的模式存在，优化连接操作
+		 */
+		Set<String> patternSet = new HashSet<String>();
 		for(BehaviorPattern behaviorPattern1:tempList){
 			for(BehaviorPattern behaviorPattern2:patternlist){
-				if(tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&isAbleToJoin(behaviorPattern1, behaviorPattern2)){//如果两个行为模式是可以join的
+				if(/*tempList.indexOf(behaviorPattern1)!=patternlist.indexOf(behaviorPattern2)&&*/isAbleToJoin(behaviorPattern1, behaviorPattern2)){//如果两个行为模式是可以join的
 					List<AbstractActorBehavior> abstractActorBehaviorList1 =  behaviorPattern1.getBehaviorList();
 					List<AbstractActorBehavior> abstractActorBehaviorList2 =  behaviorPattern2.getBehaviorList();
 					List<AbstractActorBehavior> joinList = new ArrayList<AbstractActorBehavior>(abstractActorBehaviorList1);
 					Collections.copy(joinList, abstractActorBehaviorList1);
 					joinList.add(abstractActorBehaviorList2.get(abstractActorBehaviorList2.size()-1));
+					String patternString = "";
+					for(AbstractActorBehavior aab:joinList){
+						patternString+=aab.getEventType()+"|";
+					}
+					if(patternSet.contains(patternString)){
+						continue;
+					}else {
+						patternSet.add(patternString);
+					}
 					List<AbstractActorBehavior> abstractActorBehaviorList3 = joinList;
 					BehaviorPattern behaviorPattern = new BehaviorPattern<AbstractActorBehavior>();
 					behaviorPattern.setBehaviorList(abstractActorBehaviorList3);
@@ -250,13 +264,14 @@ public class AbstractActorGspMiningAlgorithm extends
 		List<AbstractActorBehavior> abstractActorBehaviorList2 =  behaviorPattern2.getBehaviorList();
 		
 		if(abstractActorBehaviorList1.size()==1){
-			if(abstractActorBehaviorList1.get(0).equals(abstractActorBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
+			/*if(abstractActorBehaviorList1.get(0).equals(abstractActorBehaviorList2.get(0))&&//若list长度等于1 并且，二者并不是同时的同一个行为,可以连接
 					abstractActorBehaviorList1.get(0).getCreatedAt().equals(
 							abstractActorBehaviorList2.get(0).getCreatedAt())){
 				return false;
 			}else{
 				return true;
-			}
+			}*/
+			return true;
 		}
 		
 		for(int i=1;i<abstractActorBehaviorList1.size();i++){
@@ -319,14 +334,19 @@ public class AbstractActorGspMiningAlgorithm extends
 	private HashMap<String, Integer>  findAbstractActorBehaviorPatterns(List<BehaviorPattern> patternList,List<Artifact<SimpleBehavior>> artifacts){
 		
 		HashMap<String, Integer> abstractActorResultMap = new HashMap<String, Integer>();
-		
+		int ci=0;
 		for(BehaviorPattern<AbstractActorBehavior> aab:patternList){
+			if(patternList.indexOf(aab)>5500){
+				break;
+			}
+			ci++;
+			System.out.println("第"+ci+"个模式,一共"+patternList.size()+"个模式");
 			for(Artifact<SimpleBehavior> artifact:artifacts){
 				/*
 				 * 得到在这个artifact下满足与当前模式的角标序列
 				 */
 				List<List<Integer>> resultCombination = getResultCombination(aab,artifact);
-				if(!resultCombination.isEmpty()){
+				if(resultCombination!=null&&!resultCombination.isEmpty()){
 					HashSet<String> combinationSet = new HashSet<String>();
 					for(List<Integer> result:resultCombination){
 						//将所有的人物编码都存放在一个Map里
@@ -397,6 +417,10 @@ public class AbstractActorGspMiningAlgorithm extends
 			BehaviorPattern<AbstractActorBehavior> aab,
 			Artifact<SimpleBehavior> artifact) {
 		
+		if(aab.getBehaviorList().size()>artifact.getBehaviorSeq().size()){
+			return null;
+		}
+		
 		List<SimpleBehavior> artBehaviorSeq  = artifact.getBehaviorSeq();
 		List<AbstractActorBehavior> aabBehaviorSeq = aab.getBehaviorList();
 		List<List<Integer>> resultList = new ArrayList<List<Integer>>();
@@ -418,8 +442,9 @@ public class AbstractActorGspMiningAlgorithm extends
 						Collections.copy(result, culculateList);
 						resultList.add(result);
 						cPoint--;
+						endflag = true;
 					}else{
-						System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
+						//System.out.println(cPoint+" "+aabBehaviorSeq.size()+" "+culculateList.size());
 						if(culculateList.size()>1000){
 							System.out.println("pause");
 						}
@@ -444,10 +469,15 @@ public class AbstractActorGspMiningAlgorithm extends
 	public static void main(String args[]){
 		long time1 = System.currentTimeMillis();
 
-		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(30);
+		AbstractActorGspMiningAlgorithm abstractActorGspMiningAlgorithm = new AbstractActorGspMiningAlgorithm(33);
 		abstractActorGspMiningAlgorithm.setArtifactType("Issue");
-		abstractActorGspMiningAlgorithm.setRepo("jquery/jquery/");
+		abstractActorGspMiningAlgorithm.setRepo("golang/go/");
 		abstractActorGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);
+		/*abstractActorGspMiningAlgorithm.setSurpport(129);
+		abstractActorGspMiningAlgorithm.execute(null);
+		abstractActorGspMiningAlgorithm.setSurpport(170);
+		abstractActorGspMiningAlgorithm.execute(null);*/
+		
 	}
 }
