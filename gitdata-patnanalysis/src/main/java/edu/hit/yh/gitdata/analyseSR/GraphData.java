@@ -361,6 +361,7 @@ public class GraphData {
 	}
 	
 	
+	@SuppressWarnings("static-access")
 	public static void main(String args[]){
 		GraphData g = new GraphData();
 		//g.shannonWienerGraph("AAGM", "golang-go");
@@ -369,26 +370,16 @@ public class GraphData {
 		
 		//g.getAverageTimebyPeople("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AATGM-DefinitelyTyped-DefinitelyTyped-9.txt");
 		
-		/*g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-jquery-jquery-1%.txt",
-"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-jquery-jquery-1%.txt");
-		g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-jquery-jquery-2%.txt",
-				"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-jquery-jquery-2%.txt");
-		g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-jquery-jquery-3%.txt",
-				"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-jquery-jquery-3%.txt");
-		g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-jquery-jquery-4%.txt",
-				"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-jquery-jquery-4%.txt");
-		g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-jquery-jquery-5%.txt",
-				"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-jquery-jquery-5%.txt");*/
-		g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-1%.txt",
-				"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-1%.txt");
-						g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-2%.txt",
-								"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-2%.txt");
-						g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-3%.txt",
-								"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-3%.txt");
-						g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-4%.txt",
-								"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-4%.txt");
-						g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-5%.txt",
-								"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-5%.txt");		
+		
+		
+		/**
+		 * 
+		 */
+		for(int i=1;i<=5;i++){
+			g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-1%.txt",
+					"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-"+i+"%.txt");
+		}
+		
 		
 	}
 	

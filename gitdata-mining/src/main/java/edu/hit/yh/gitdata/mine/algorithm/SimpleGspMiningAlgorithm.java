@@ -287,8 +287,8 @@ public class SimpleGspMiningAlgorithm extends
 	public static void main(String args[]){
 		
 		long time1 = System.currentTimeMillis();
-		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(28);
-		simpleGspMiningAlgorithm.setRepo("atom/electron/");
+		SimpleGspMiningAlgorithm simpleGspMiningAlgorithm = new SimpleGspMiningAlgorithm(9);
+		simpleGspMiningAlgorithm.setRepo("DefinitelyTyped/DefinitelyTyped/");
 		simpleGspMiningAlgorithm.setArtifactType("Issue");
 		simpleGspMiningAlgorithm.execute(null);
 		System.out.println(System.currentTimeMillis()-time1);

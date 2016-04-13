@@ -119,7 +119,7 @@ public class ArtifactUtil {
 			
 			simpleBehavior.setEventType("issueComment");
 			issueArtifactsMap.put(StringUtil.objectToString(objects[3]), artifact);
-
+		
 			}
 		}
 		

@@ -42,16 +42,16 @@ public class CalculateUtil {
 	
 	public static HashMap<String, Integer> artifactListSizeMap = new HashMap<String, Integer>();
 	static{
-		/*artifactListSizeMap.put("jquery-jquery", 513);
+		artifactListSizeMap.put("jquery-jquery", 513);
 		artifactListSizeMap.put("golang-go", 3219);
 		artifactListSizeMap.put("gogits-gogs", 1914);
 		artifactListSizeMap.put("FreeCodeCamp-FreeCodeCamp", 1887);
 		artifactListSizeMap.put("mrdoob-three.js", 4428);
-		artifactListSizeMap.put("DefinitelyTyped-DefinitelyTyped", 992);*/
+		artifactListSizeMap.put("DefinitelyTyped-DefinitelyTyped", 992);
 		artifactListSizeMap.put("atom-electron", 2875);
-		/*artifactListSizeMap.put("zurb-foundation-sites", 4031);
+		artifactListSizeMap.put("zurb-foundation-sites", 4031);
 		artifactListSizeMap.put("Microsoft-TypeScript", 4306);
-		artifactListSizeMap.put("docker-docker", 2056);*/
+		artifactListSizeMap.put("docker-docker", 2056);
 	}
 	/**
 	 * 计算香浓指数，用于描述一个项目里，所有的序列模式的信息含量，也就是序列模式丰富度

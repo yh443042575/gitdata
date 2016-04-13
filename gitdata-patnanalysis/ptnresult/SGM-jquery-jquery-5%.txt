@@ -1,46 +1,3 @@
-dmethvin closeIssue |->342
-dmethvin issueComment |->1084
-mgol issueComment |->1370
-timmywil addLable |->200
-timmywil issueComment |->560
-timmywil closeIssue |->234
-arthurvr issueComment |->48
-jaubourg issueComment |->86
-dmethvin addLable |->78
-rwaldron issueComment |->36
-mgol closeIssue |->190
-gibson042 addLable |->82
-gnarf issueComment |->56
-gibson042 issueComment |->274
-Mr21 issueComment |->58
-mgol deleteLable |->26
-scottgonzalez closeIssue |->38
-scottgonzalez issueComment |->134
-dmethvin addMilestone |->122
-dmethvin reference |->92
-dmethvin removeMilestone |->34
-gibson042 closeIssue |->84
-markelog issueComment |->384
-markelog addLable |->164
-markelog reference |->212
-markelog closeIssue |->82
-bperel reference |->90
-mgol addMilestone |->110
-mgol addLable |->164
-mgol reference |->276
-gibson042 reference |->108
-markelog openIssue |->46
-timmywil addMilestone |->42
-timmywil deleteLable |->30
-dmethvin deleteLable |->58
-timmywil reference |->120
-arschmitz issueComment |->34
-ChrisAntaki issueComment |->40
-mgol openIssue |->134
-mgol assignedSomeone |->44
-teo1978 issueComment |->28
-AVGP reference |->36
-LeonardoBraga reference |->48
 dmethvin closeIssue |dmethvin issueComment |->166
 dmethvin issueComment |dmethvin closeIssue |->85
 dmethvin issueComment |mgol issueComment |->140
@@ -48,13 +5,11 @@ dmethvin issueComment |timmywil addLable |->35
 dmethvin issueComment |timmywil issueComment |->104
 dmethvin issueComment |timmywil closeIssue |->43
 dmethvin issueComment |jaubourg issueComment |->31
-dmethvin issueComment |dmethvin addLable |->25
 dmethvin issueComment |gibson042 issueComment |->53
 dmethvin issueComment |scottgonzalez issueComment |->30
 dmethvin issueComment |dmethvin addMilestone |->36
 dmethvin issueComment |markelog issueComment |->74
 dmethvin issueComment |markelog reference |->49
-dmethvin issueComment |bperel reference |->25
 dmethvin issueComment |mgol reference |->83
 dmethvin issueComment |gibson042 reference |->38
 dmethvin issueComment |timmywil reference |->28
@@ -102,7 +57,6 @@ gibson042 issueComment |mgol issueComment |->35
 gibson042 issueComment |timmywil issueComment |->44
 gibson042 issueComment |gibson042 addLable |->32
 gibson042 issueComment |markelog issueComment |->33
-gibson042 issueComment |gibson042 reference |->25
 scottgonzalez issueComment |dmethvin issueComment |->50
 scottgonzalez issueComment |mgol issueComment |->56
 scottgonzalez issueComment |timmywil issueComment |->45
@@ -133,7 +87,6 @@ mgol addMilestone |timmywil reference |->30
 mgol addLable |dmethvin issueComment |->41
 mgol addLable |mgol issueComment |->73
 mgol addLable |timmywil issueComment |->38
-mgol addLable |markelog issueComment |->25
 mgol addLable |mgol reference |->67
 mgol reference |dmethvin issueComment |->31
 mgol reference |mgol issueComment |->73
@@ -163,6 +116,7 @@ dmethvin issueComment |scottgonzalez issueComment |mgol reference |->56
 dmethvin issueComment |markelog issueComment |mgol issueComment |->31
 dmethvin issueComment |markelog issueComment |markelog reference |->28
 dmethvin issueComment |markelog issueComment |mgol reference |->56
+dmethvin issueComment |mgol addLable |mgol reference |->31
 mgol issueComment |dmethvin closeIssue |dmethvin issueComment |->42
 mgol issueComment |dmethvin issueComment |timmywil issueComment |->42
 mgol issueComment |dmethvin issueComment |markelog issueComment |->27
@@ -171,13 +125,12 @@ mgol issueComment |timmywil addLable |mgol reference |->26
 mgol issueComment |timmywil issueComment |dmethvin issueComment |->34
 mgol issueComment |timmywil issueComment |mgol reference |->29
 mgol issueComment |timmywil closeIssue |timmywil issueComment |->44
-mgol issueComment |gibson042 issueComment |timmywil issueComment |->25
 mgol issueComment |scottgonzalez issueComment |dmethvin issueComment |->26
 mgol issueComment |scottgonzalez issueComment |timmywil issueComment |->33
 mgol issueComment |scottgonzalez issueComment |mgol reference |->54
 mgol issueComment |markelog issueComment |dmethvin issueComment |->33
-mgol issueComment |markelog issueComment |timmywil issueComment |->25
 mgol issueComment |markelog issueComment |mgol reference |->72
+mgol issueComment |markelog addLable |mgol reference |->52
 mgol issueComment |mgol addLable |dmethvin issueComment |->31
 mgol issueComment |mgol addLable |mgol reference |->43
 timmywil addLable |timmywil closeIssue |timmywil issueComment |->29
@@ -185,22 +138,27 @@ timmywil issueComment |dmethvin issueComment |mgol issueComment |->31
 timmywil issueComment |mgol issueComment |dmethvin issueComment |->28
 timmywil issueComment |mgol issueComment |mgol reference |->27
 timmywil issueComment |timmywil addLable |dmethvin issueComment |->27
+timmywil issueComment |scottgonzalez issueComment |mgol issueComment |->30
 timmywil issueComment |markelog issueComment |mgol issueComment |->27
 scottgonzalez issueComment |dmethvin issueComment |mgol issueComment |->30
-scottgonzalez issueComment |dmethvin issueComment |timmywil issueComment |->25
 scottgonzalez issueComment |dmethvin issueComment |mgol reference |->57
 scottgonzalez issueComment |mgol issueComment |dmethvin issueComment |->26
 scottgonzalez issueComment |mgol issueComment |timmywil issueComment |->28
 scottgonzalez issueComment |mgol issueComment |mgol reference |->55
 scottgonzalez issueComment |timmywil issueComment |mgol issueComment |->30
+scottgonzalez issueComment |markelog issueComment |mgol issueComment |->30
+scottgonzalez issueComment |markelog issueComment |mgol reference |->53
 markelog issueComment |dmethvin issueComment |mgol issueComment |->26
 markelog issueComment |dmethvin issueComment |markelog reference |->34
 markelog issueComment |dmethvin issueComment |mgol reference |->56
-markelog issueComment |mgol issueComment |dmethvin issueComment |->25
 markelog issueComment |mgol issueComment |mgol reference |->70
+markelog issueComment |scottgonzalez issueComment |mgol reference |->53
+markelog issueComment |markelog addLable |mgol reference |->54
+markelog issueComment |mgol addLable |mgol reference |->26
 markelog addLable |dmethvin issueComment |markelog issueComment |->28
 markelog addLable |dmethvin issueComment |mgol reference |->53
 markelog addLable |mgol issueComment |mgol reference |->54
+markelog addLable |scottgonzalez issueComment |mgol reference |->54
 markelog addLable |markelog issueComment |dmethvin issueComment |->26
 markelog addLable |markelog issueComment |markelog reference |->32
 markelog addLable |markelog issueComment |mgol reference |->54
@@ -214,12 +172,14 @@ mgol addMilestone |timmywil issueComment |mgol issueComment |->29
 mgol addMilestone |markelog issueComment |mgol issueComment |->30
 mgol addMilestone |mgol addLable |mgol issueComment |->29
 mgol addLable |mgol issueComment |mgol reference |->37
+mgol addLable |mgol addMilestone |mgol issueComment |->36
+mgol addLable |mgol addMilestone |mgol reference |->28
 mgol addLable |mgol reference |mgol issueComment |->27
-mgol reference |dmethvin issueComment |mgol issueComment |->25
 mgol reference |mgol issueComment |timmywil issueComment |->28
-mgol reference |timmywil issueComment |mgol issueComment |->25
 mgol reference |markelog issueComment |mgol issueComment |->31
-mgol openIssue |dmethvin closeIssue |dmethvin issueComment |->25
+mgol reference |mgol addMilestone |mgol issueComment |->27
+markelog openIssue |markelog addLable |markelog issueComment |->41
+markelog openIssue |markelog addLable |markelog reference |->29
 mgol openIssue |dmethvin issueComment |mgol issueComment |->39
 mgol openIssue |dmethvin issueComment |timmywil issueComment |->26
 mgol openIssue |mgol issueComment |dmethvin issueComment |->61
@@ -230,6 +190,7 @@ mgol openIssue |mgol issueComment |mgol reference |->34
 mgol openIssue |mgol issueComment |timmywil reference |->32
 mgol openIssue |timmywil issueComment |dmethvin issueComment |->26
 mgol openIssue |timmywil issueComment |mgol issueComment |->37
+mgol openIssue |markelog issueComment |mgol issueComment |->26
 mgol openIssue |mgol addMilestone |dmethvin issueComment |->47
 mgol openIssue |mgol addMilestone |mgol issueComment |->215
 mgol openIssue |mgol addMilestone |timmywil issueComment |->43
@@ -240,22 +201,65 @@ mgol openIssue |mgol addLable |dmethvin issueComment |->27
 mgol openIssue |mgol addLable |mgol issueComment |->53
 mgol openIssue |mgol addLable |timmywil issueComment |->28
 mgol openIssue |mgol addLable |mgol reference |->30
-mgol openIssue |mgol reference |dmethvin issueComment |->25
 mgol openIssue |mgol reference |mgol issueComment |->50
 mgol openIssue |mgol reference |timmywil issueComment |->30
+mgol openIssue |mgol assignedSomeone |mgol issueComment |->154
+mgol openIssue |mgol assignedSomeone |timmywil reference |->26
+mgol assignedSomeone |mgol addMilestone |mgol issueComment |->115
+dmethvin issueComment |mgol issueComment |mgol addLable |mgol reference |->27
 dmethvin issueComment |scottgonzalez issueComment |mgol issueComment |mgol reference |->53
+dmethvin issueComment |scottgonzalez issueComment |markelog issueComment |mgol issueComment |->26
+dmethvin issueComment |scottgonzalez issueComment |markelog issueComment |mgol reference |->53
 dmethvin issueComment |markelog issueComment |mgol issueComment |mgol reference |->53
+mgol issueComment |dmethvin issueComment |scottgonzalez issueComment |mgol reference |->54
 mgol issueComment |dmethvin issueComment |markelog issueComment |mgol reference |->56
+mgol issueComment |dmethvin issueComment |mgol addLable |mgol reference |->26
 mgol issueComment |scottgonzalez issueComment |dmethvin issueComment |mgol reference |->54
+mgol issueComment |scottgonzalez issueComment |markelog issueComment |mgol reference |->53
 mgol issueComment |markelog issueComment |dmethvin issueComment |mgol reference |->56
+mgol issueComment |markelog issueComment |scottgonzalez issueComment |mgol reference |->53
+mgol issueComment |markelog issueComment |mgol addLable |mgol reference |->26
+mgol issueComment |markelog addLable |dmethvin issueComment |mgol reference |->52
+mgol issueComment |markelog addLable |markelog issueComment |mgol reference |->52
 scottgonzalez issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->54
+scottgonzalez issueComment |dmethvin issueComment |markelog issueComment |mgol issueComment |->28
+scottgonzalez issueComment |dmethvin issueComment |markelog issueComment |mgol reference |->53
+scottgonzalez issueComment |markelog issueComment |dmethvin issueComment |mgol reference |->53
+scottgonzalez issueComment |markelog issueComment |mgol issueComment |mgol reference |->53
 markelog issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->53
+markelog issueComment |dmethvin issueComment |scottgonzalez issueComment |mgol reference |->53
+markelog issueComment |scottgonzalez issueComment |dmethvin issueComment |mgol reference |->53
+markelog issueComment |scottgonzalez issueComment |mgol issueComment |mgol reference |->53
+markelog issueComment |markelog addLable |dmethvin issueComment |mgol reference |->52
+markelog issueComment |markelog addLable |mgol issueComment |mgol reference |->54
+markelog addLable |dmethvin issueComment |mgol issueComment |mgol reference |->52
 markelog addLable |dmethvin issueComment |markelog issueComment |mgol reference |->52
+markelog addLable |scottgonzalez issueComment |dmethvin issueComment |mgol reference |->53
+markelog addLable |scottgonzalez issueComment |mgol issueComment |mgol reference |->52
+markelog addLable |scottgonzalez issueComment |markelog issueComment |mgol reference |->52
 markelog addLable |markelog issueComment |dmethvin issueComment |mgol reference |->52
-mgol openIssue |mgol issueComment |dmethvin issueComment |timmywil issueComment |->25
+markelog addLable |markelog issueComment |mgol issueComment |mgol reference |->54
 mgol openIssue |mgol addMilestone |dmethvin issueComment |mgol issueComment |->34
 mgol openIssue |mgol addMilestone |mgol issueComment |dmethvin issueComment |->43
 mgol openIssue |mgol addMilestone |mgol issueComment |timmywil issueComment |->40
 mgol openIssue |mgol addMilestone |mgol issueComment |timmywil reference |->27
 mgol openIssue |mgol addMilestone |timmywil issueComment |mgol issueComment |->28
-mgol openIssue |mgol reference |mgol issueComment |timmywil issueComment |->25
+mgol openIssue |mgol addMilestone |markelog issueComment |mgol issueComment |->26
+mgol openIssue |mgol addLable |mgol addMilestone |mgol issueComment |->28
+mgol openIssue |mgol reference |mgol addMilestone |mgol issueComment |->27
+mgol openIssue |mgol assignedSomeone |mgol addMilestone |mgol issueComment |->115
+dmethvin issueComment |scottgonzalez issueComment |markelog issueComment |mgol issueComment |mgol reference |->53
+mgol issueComment |dmethvin issueComment |scottgonzalez issueComment |markelog issueComment |mgol reference |->53
+mgol issueComment |scottgonzalez issueComment |dmethvin issueComment |markelog issueComment |mgol reference |->53
+mgol issueComment |scottgonzalez issueComment |markelog issueComment |dmethvin issueComment |mgol reference |->53
+mgol issueComment |markelog issueComment |dmethvin issueComment |scottgonzalez issueComment |mgol reference |->53
+mgol issueComment |markelog issueComment |scottgonzalez issueComment |dmethvin issueComment |mgol reference |->53
+scottgonzalez issueComment |dmethvin issueComment |markelog issueComment |mgol issueComment |mgol reference |->53
+scottgonzalez issueComment |markelog issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->53
+markelog issueComment |dmethvin issueComment |scottgonzalez issueComment |mgol issueComment |mgol reference |->53
+markelog issueComment |scottgonzalez issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->53
+markelog issueComment |markelog addLable |dmethvin issueComment |mgol issueComment |mgol reference |->52
+markelog addLable |dmethvin issueComment |markelog issueComment |mgol issueComment |mgol reference |->52
+markelog addLable |scottgonzalez issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->52
+markelog addLable |scottgonzalez issueComment |markelog issueComment |mgol issueComment |mgol reference |->52
+markelog addLable |markelog issueComment |dmethvin issueComment |mgol issueComment |mgol reference |->52
