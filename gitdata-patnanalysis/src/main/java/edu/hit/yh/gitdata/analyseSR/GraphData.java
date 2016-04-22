@@ -365,7 +365,7 @@ public class GraphData {
 	public static void main(String args[]){
 		GraphData g = new GraphData();
 		//g.shannonWienerGraph("AAGM", "golang-go");
-		//g.individuationSequenceGraph();
+		g.individuationSequenceGraph();
 		//g.getSequenceLengthAndCount("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-Microsoft-TypeScript-5%.txt");
 		
 		//g.getAverageTimebyPeople("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AATGM-DefinitelyTyped-DefinitelyTyped-9.txt");
@@ -375,11 +375,11 @@ public class GraphData {
 		/**
 		 * 
 		 */
-		for(int i=1;i<=5;i++){
+		/*for(int i=1;i<=5;i++){
 			g.getExistAndNewRatio("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-golang-go-1%.txt",
 					"/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/SGM-golang-go-"+i+"%.txt");
 		}
-		
+*/		
 		
 	}
 	

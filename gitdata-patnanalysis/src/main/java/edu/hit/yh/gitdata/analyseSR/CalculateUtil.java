@@ -79,7 +79,7 @@ public class CalculateUtil {
 		HashMap<String, HashMap<String,Double>> repoProbabilityMap = new HashMap<String, HashMap<String,Double>>();
 		
 		//List<String> algorithmList = new ArrayList<String>(Arrays.asList("AAGM","AATGM")) ;
-		List<String> algorithmList = new ArrayList<String>(Arrays.asList("AAGM")) ;
+		List<String> algorithmList = new ArrayList<String>(Arrays.asList("AATGM")) ;
 		for(String algrithm : algorithmList){
 			for(String repo:CalculateUtil.REPO_LIST){
 				HashMap<String, Double> sequenceProbabilityMap = new HashMap<String, Double>();

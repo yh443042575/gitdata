@@ -45,7 +45,7 @@ public class ArtifactUtil {
 		 */
 		
 		//取得跟issuesEvnet有关的行为
-		List<Object[]> issuesEventList = session.createSQLQuery("select actor,target,createdAt,artifactId,issueaction from issuesEvent where repo='"+repo+"'").list();
+		List<Object[]> issuesEventList = session.createSQLQuery("select actor,target,createdAt,artifactId,issueaction from issuesEvent where repo='"+repo+"' and createdAt is not NULL").list();
 		for(Object[] objects : issuesEventList ){
 			Artifact<SimpleBehavior> artifact = null;
 			//如果当前动作所处的Artifact是存在的，则在这个artifact中把我们的这个behavior装进去
@@ -87,7 +87,7 @@ public class ArtifactUtil {
 		
 		
 		//取得跟issuesCommentEvent有关的评论行为
-		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' and artifactId like '%issues%' order by artifactId").list();
+		List<Object[]> issueCommentEventList = session.createSQLQuery("select actor,target,createdAt,artifactId from issueCommentEvent where repo='"+repo+"' and artifactId like '%issues%' order by artifactId and createdAt is not NULL").list();
 		//handle IssueComment
 		if(issueCommentEventList!=null&&issueCommentEventList.size()>0){
 			

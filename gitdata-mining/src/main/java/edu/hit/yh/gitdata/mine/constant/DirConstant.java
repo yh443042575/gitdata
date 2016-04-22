@@ -33,8 +33,20 @@ public class DirConstant {
 	 */
 	public static String PATTERN_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/";
 	
+	/**
+	 * OSX下的模式artifact结果存放文件目录
+	 */
+	public static String ARTIFACT_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/artresult/";
 	
+	/**
+	 * OSX下的模式artifact分析结果存放文件目录
+	 */
+	public static String ARTIFACT_ANALYSE_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/artAnalyseResult/";
 	
+	/**
+	 * OSX下各个项目的最佳分类方式存储路径
+	 */
+	public static String ARTIFACT_MIN_VALUE_RESULT = "/Users/mac/git/gitdata/gitdata-patnanalysis/artAnalyseResult/1minValueResult/";
 	
 	
 }
