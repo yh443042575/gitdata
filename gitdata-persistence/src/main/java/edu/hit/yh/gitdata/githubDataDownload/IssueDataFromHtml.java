@@ -611,9 +611,9 @@ public class IssueDataFromHtml {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		issueDataFromHtml.setSession(session);
 		//3648
-		for(int i=6846;i<=7670;i++){
+		for(int i=5850;i<=7903;i++){
 			try {
-				String url = "https://github.com/Microsoft/TypeScript/issues/"+String.valueOf(i);
+				String url = "https://github.com/FreeCodeCamp/FreeCodeCamp/issues/"+String.valueOf(i);
 				System.out.println("解析第"+i+"个");
 				issueDataFromHtml.getDataFromIssueUrl(url);
 			} catch (Exception e) {

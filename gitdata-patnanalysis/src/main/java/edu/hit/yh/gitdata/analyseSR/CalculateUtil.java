@@ -28,31 +28,62 @@ public class CalculateUtil {
 	 * 初始化repository的list，以供后续遍历使用
 	 */
 	public static List<String> REPO_LIST = new ArrayList<String>(Arrays.asList(
-			"jquery-jquery",
-			"golang-go",
-			"gogits-gogs",
-			"FreeCodeCamp-FreeCodeCamp",
-			"docker-docker",
-			"mrdoob-three.js",
-			"DefinitelyTyped-DefinitelyTyped",
 			"atom-electron",
-			"zurb-foundation-sites",
-			"Microsoft-TypeScript"));
+			"DefinitelyTyped-DefinitelyTyped",
+			"docker-docker",
+			"FreeCodeCamp-FreeCodeCamp",
+			"gogits-gogs",
+			"golang-go",
+			"jquery-jquery",
+			"mrdoob-three.js",
+			"Microsoft-TypeScript",
+			"zurb-foundation-sites"));
+	/**
+	 * 初始化repository的list，以供后续遍历使用
+	 */
+	public static List<String> REPO_LIST_SIMPLE= new ArrayList<String>(Arrays.asList(
+			"ETR",
+			"DT",
+			"DK",
+			"FCC",
+			"GOG",
+			"GO",
+			"JQ",
+			"TJ",
+			"TS",
+			"FS"));
+	
 	
 	
 	public static HashMap<String, Integer> artifactListSizeMap = new HashMap<String, Integer>();
 	static{
-		artifactListSizeMap.put("jquery-jquery", 513);
+		artifactListSizeMap.put("jquery-jquery", 534);
 		artifactListSizeMap.put("golang-go", 3219);
-		artifactListSizeMap.put("gogits-gogs", 1914);
-		artifactListSizeMap.put("FreeCodeCamp-FreeCodeCamp", 1887);
-		artifactListSizeMap.put("mrdoob-three.js", 4428);
-		artifactListSizeMap.put("DefinitelyTyped-DefinitelyTyped", 992);
-		artifactListSizeMap.put("atom-electron", 2875);
-		artifactListSizeMap.put("zurb-foundation-sites", 4031);
-		artifactListSizeMap.put("Microsoft-TypeScript", 4306);
-		artifactListSizeMap.put("docker-docker", 2056);
+		artifactListSizeMap.put("gogits-gogs", 1979);
+		artifactListSizeMap.put("FreeCodeCamp-FreeCodeCamp", 1924);
+		artifactListSizeMap.put("mrdoob-three.js", 4674);
+		artifactListSizeMap.put("DefinitelyTyped-DefinitelyTyped", 1173);
+		artifactListSizeMap.put("atom-electron", 3129);
+		artifactListSizeMap.put("zurb-foundation-sites", 4341);
+		artifactListSizeMap.put("Microsoft-TypeScript", 4667);
+		artifactListSizeMap.put("docker-docker", 2158);
 	}
+	
+	
+	public static HashMap<String, String> artifactListBuildTimeMap = new HashMap<String, String>();
+	static{
+		artifactListBuildTimeMap.put("jquery jquery ", "2014-09-13T00:00:00Z");
+		artifactListBuildTimeMap.put("atom electron ", "2013-04-07T00:00:00Z");
+		artifactListBuildTimeMap.put("golang go ", "2009-10-22T00:00:00Z");
+		artifactListBuildTimeMap.put("FreeCodeCamp FreeCodeCamp ", "2013-11-10T00:00:00Z");
+		artifactListBuildTimeMap.put("mrdoob three.js ", "2010-03-21T00:00:00Z");
+		artifactListBuildTimeMap.put("DefinitelyTyped DefinitelyTyped ", "2012-09-30T00:00:00Z");
+		artifactListBuildTimeMap.put("zurb foundation sites ", "2011-10-09T00:00:00Z");
+		artifactListBuildTimeMap.put("Microsoft TypeScript ", "2014-07-06T00:00:00Z");
+		artifactListBuildTimeMap.put("docker docker ", "2013-01-13T00:00:00Z");
+		artifactListBuildTimeMap.put("gogits gogs ", "2014-01-09T00:00:00Z");
+	}
+	
 	/**
 	 * 计算香浓指数，用于描述一个项目里，所有的序列模式的信息含量，也就是序列模式丰富度
 	 * 输入，每个模式的支持度，所有模式出现的总数
@@ -62,7 +93,7 @@ public class CalculateUtil {
 		for(String ptn:pattern){
 			String[] info = ptn.split("->");
 			Double ni = Double.valueOf(info[1]);
-			H+=ni/(total*Math.log(ni)/Math.log(total));
+			H+=-ni*(Math.log(ni)-Math.log(total))/total;
 		}
 		return H;
 	}

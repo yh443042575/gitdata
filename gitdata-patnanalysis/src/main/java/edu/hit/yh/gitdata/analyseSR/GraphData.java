@@ -364,13 +364,11 @@ public class GraphData {
 	@SuppressWarnings("static-access")
 	public static void main(String args[]){
 		GraphData g = new GraphData();
-		//g.shannonWienerGraph("AAGM", "golang-go");
-		g.individuationSequenceGraph();
-		//g.getSequenceLengthAndCount("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-Microsoft-TypeScript-5%.txt");
+		//g.shannonWienerGraph("AAGM", "mrdoob-three.js");
+		//g.individuationSequenceGraph();
+		g.getSequenceLengthAndCount("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AAGM-Microsoft-TypeScript-5%.txt");
 		
 		//g.getAverageTimebyPeople("/Users/mac/git/gitdata/gitdata-patnanalysis/ptnresult/AATGM-DefinitelyTyped-DefinitelyTyped-9.txt");
-		
-		
 		
 		/**
 		 * 

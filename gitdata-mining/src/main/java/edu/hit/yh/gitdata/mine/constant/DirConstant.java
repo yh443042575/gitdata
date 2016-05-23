@@ -39,6 +39,11 @@ public class DirConstant {
 	public static String ARTIFACT_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/artresult/";
 	
 	/**
+	 * OSX下的模式artifact结果存放将数据归一化之后的文件目录
+	 */
+	public static String ARTIFACT_RESULT_TO_1_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/artresultTo1/";
+	
+	/**
 	 * OSX下的模式artifact分析结果存放文件目录
 	 */
 	public static String ARTIFACT_ANALYSE_RESULT_FOLDER = "/Users/mac/git/gitdata/gitdata-patnanalysis/artAnalyseResult/";
@@ -46,7 +51,24 @@ public class DirConstant {
 	/**
 	 * OSX下各个项目的最佳分类方式存储路径
 	 */
-	public static String ARTIFACT_MIN_VALUE_RESULT = "/Users/mac/git/gitdata/gitdata-patnanalysis/artAnalyseResult/1minValueResult/";
+	public static String ARTIFACT_MIN_VALUE_RESULT = "/Users/mac/git/gitdata/gitdata-patnanalysis/artAnalyseResult/2minValueResult/";
+	
+	/**
+	 * OSX下各个项目的蜘蛛网图的存储路径
+	 */
+	public static String SPIDER_PNG = "/Users/mac/git/gitdata/gitdata-patnanalysis/spiderPng/";
+	
+	/**
+	 * OSX下各个项目的最佳盒子图的存储路径
+	 */
+	public static String BOX_PLOT_PNG = "/Users/mac/git/gitdata/gitdata-patnanalysis/boxPlotPng/";
+
+	/*
+	 * 将jfreechart导出成为SVG格式的图片路径
+	 */
+	public static String CHART_TO_SVG = "/Users/mac/git/gitdata/gitdata-patnanalysis/chartToSvg/";
+	
+	public static String PDF_RESULT = "/Users/mac/git/gitdata/gitdata-patnanalysis/PDFResult/";
 	
 	
 }
